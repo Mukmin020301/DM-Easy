@@ -1,4 +1,4 @@
-﻿Public Class Comp
+Public Class Comp
     Private WithEvents GrafSet As New GrafSet
     Friend WithEvents prntDoc As New Printing.PrintDocument
 
@@ -971,7 +971,11 @@
         Dim bmp As New Bitmap(BMPW, BMPH)
         Dim fmloc As System.Drawing.Point = Me.PointToScreen(Me.Panel1.Location)
         Dim ik, ij, repoints As Integer
-        Dim xlApp As New Excel.Application
+        Dim xlApp As Object = Nothing
+        Try
+            xlApp = CreateObject("Excel.Application")
+        Catch
+        End Try
 
         foto = Graphics.FromImage(bmp)
 
@@ -980,8 +984,8 @@
         ' Clipboard.SetDataObject(foto, False)
         Clipboard.SetImage(bmp)
         Try
-            Dim excelBook As Excel.Workbook = xlApp.Workbooks.Add
-            Dim excelWorksheet As Excel.Worksheet = CType(excelBook.Worksheets(1), Excel.Worksheet)
+            Dim excelBook As Object = xlApp.Workbooks.Add
+            Dim excelWorksheet As Object = excelBook.Worksheets(1)
             xlApp.Visible = True
             With excelWorksheet
                 .Cells.Select()

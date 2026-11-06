@@ -1,4 +1,4 @@
-﻿Imports System                      'Dyno Monitor V-Basic for FAT Gen5 Dyno Controllers
+Imports System                      'Dyno Monitor V-Basic for FAT Gen5 Dyno Controllers
 Imports System.IO.Ports             'These "Imports" are just non-required subroutines required by this program
 Imports System.Threading            'Goto View "Show Code" if you can't find this. 
 Imports System.Threading.Thread     'Some times gotta run twice as it gives a bogus error on 1st run (No idea why).1
@@ -126,6 +126,7 @@ Public Class UniDyn
     Private WithEvents Timer1 As New System.Windows.Forms.Timer()
     Private WithEvents FOBD As New FOBD                             'OBD Controls
     Dim WithEvents OBDport As New SerialPort
+    Public Shared wpfDash As DynoDashboard = Nothing
 
 
     Public OBDon, OBDchon(20), OBDSlow As Boolean                           'OBDSlow = Send PID requests one-by-one
@@ -630,6 +631,15 @@ Public Class UniDyn
         Me.BackColor = ColSkin(Cskin)
         Panel2.BackColor = ColBack(Cback)
 
+        ' Auto-launch Modern WPF Cyberpunk Dashboard
+        Try
+            If wpfDash Is Nothing OrElse Not wpfDash.IsLoaded Then
+                wpfDash = New DynoDashboard()
+            End If
+            wpfDash.Show()
+        Catch ex As Exception
+        End Try
+
     End Sub
     Private Sub defaults()
         ver = "Default"
@@ -965,6 +975,22 @@ Public Class UniDyn
             If Ftune.Visible = True Then Call Ftune.main() 'RUnning TUnein Refresh to reduce resources a bit
             lastref = time
             scrnref = True
+
+            ' Send real-time dyno data to modern WPF Dashboard
+            If wpfDash IsNot Nothing AndAlso wpfDash.IsLoaded AndAlso wpfDash.IsVisible Then
+                Dim liveRpm As Double = a(1)
+                If Ldyno2.Text <> "Dyno" AndAlso a(2) > 0 Then liveRpm = a(2)
+                Dim liveSpeed As Double = a(15)
+                Dim liveHp As Double = a(8)
+                Dim liveTorq As Double = a(6)
+                Dim liveLoad As Double = a(9)
+                Dim liveTps As Double = Val(throttle)
+                Dim liveTemp As Double = saetemp
+
+                wpfDash.Dispatcher.InvokeAsync(Sub()
+                    wpfDash.UpdateFromRealDyno(liveRpm, liveSpeed, liveHp, liveTorq, liveLoad, liveTps, liveTemp)
+                End Sub)
+            End If
             For i = 1 To gagemax
                 Select Case gtype(i)                     '1=Gage 2=Graf  3=led   4=vert  5=Horz  6=Number
                     Case 1                                  'GAGE

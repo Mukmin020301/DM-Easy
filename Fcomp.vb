@@ -1,4 +1,4 @@
-﻿Imports System.Windows.Forms.DataVisualization.Charting
+Imports System.Windows.Forms.DataVisualization.Charting
 'Imports System.Windows.Forms.Form
 
 Public Class FComp
@@ -1137,7 +1137,11 @@ Public Class FComp
         Dim bmp As New Bitmap(Me.Width, Me.Height)
         Dim fmloc As System.Drawing.Point = Me.Bounds.Location
         Dim ik, ij, ipts As Integer
-        Dim xlApp As New Excel.Application
+        Dim xlApp As Object = Nothing
+        Try
+            xlApp = CreateObject("Excel.Application")
+        Catch
+        End Try
 
         foto = Graphics.FromImage(bmp)
         ' Panel2.DrawToBitmap(bmp, Panel2.DisplayRectangle)
@@ -1145,8 +1149,8 @@ Public Class FComp
         ' Clipboard.SetDataObject(foto, False)
         Clipboard.SetImage(bmp)
         Try
-            Dim excelBook As Excel.Workbook = xlApp.Workbooks.Add
-            Dim excelWorksheet As Excel.Worksheet = CType(excelBook.Worksheets(1), Excel.Worksheet)
+            Dim excelBook As Object = xlApp.Workbooks.Add
+            Dim excelWorksheet As Object = excelBook.Worksheets(1)
             xlApp.Visible = True
             With excelWorksheet
                 .Cells.Select()

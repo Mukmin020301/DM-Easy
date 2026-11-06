@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DYNOMAS - Universal Dynamometer Interface</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #000000;
+      color: #ffffff;
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 50% 20%, rgba(0, 240, 255, 0.05) 0%, transparent 60%),
+        linear-gradient(rgba(10, 10, 12, 0.96), rgba(6, 6, 8, 0.98));
+    }
+
+    /* Main Container (16:9 Aspect Ratio Look) */
+    .dashboard-container {
+      width: 1280px;
+      height: 720px;
+      position: relative;
+      background: #020204;
+      border: 2px solid #00f0ff;
+      border-radius: 4px;
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.35), inset 0 0 40px rgba(0, 0, 0, 0.9);
+      padding: 10px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    /* Top Title Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+      margin-bottom: 2px;
+    }
+
+    .btn-sci-fi {
+      background: transparent;
+      border: 1.5px solid #00f0ff;
+      color: #ffffff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.3), inset 0 0 8px rgba(0, 240, 255, 0.2);
+      transition: all 0.2s ease;
+    }
+    .btn-sci-fi:hover {
+      background: rgba(0, 240, 255, 0.2);
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.6);
+    }
+    .btn-sci-fi.active {
+      background: #00f0ff;
+      color: #000;
+      box-shadow: 0 0 20px #00f0ff;
+    }
+
+    /* Center Header Logo */
+    .header-center {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .logo-kzr {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      color: #00f0ff;
+      letter-spacing: 6px;
+      text-shadow: 0 0 8px #00f0ff;
+    }
+    .logo-dynomas {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      font-style: italic;
+      color: #ff2a2a;
+      letter-spacing: 2px;
+      text-shadow: 0 0 15px rgba(255, 42, 42, 0.7);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .logo-dynomas span {
+      color: #ffffff;
+    }
+    .logo-sub {
+      font-size: 9px;
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 2px;
+      color: #ff2a2a;
+      margin-top: -3px;
+      text-transform: uppercase;
+    }
+
+    /* Top Readouts (HP & RPM) */
+    .top-telemetry {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+    .data-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .data-pill .label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #ff3b3b;
+      margin-bottom: 2px;
+    }
+    .data-pill .val-box {
+      border: 1.5px solid #ff3b3b;
+      border-radius: 6px;
+      padding: 2px 14px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      min-width: 58px;
+      text-align: center;
+      color: #ffffff;
+      background: rgba(255, 59, 59, 0.08);
+      box-shadow: 0 0 8px rgba(255, 59, 59, 0.3);
+    }
+
+    /* Main Cluster Row */
+    .cluster-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 380px;
+      position: relative;
+    }
+
+    /* Gauge Dial Styles */
+    .gauge-wrapper {
+      width: 360px;
+      height: 360px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Outer Halo Rings */
+    .outer-glow-ring {
+      position: absolute;
+      width: 350px;
+      height: 350px;
+      border-radius: 50%;
+      border: 8px solid #00f0ff;
+      box-shadow: 
+        0 0 25px #00f0ff,
+        inset 0 0 20px #00f0ff,
+        0 0 50px rgba(0, 240, 255, 0.4);
+      background: radial-gradient(circle, #020406 50%, #001824 100%);
+      z-index: 1;
+    }
+
+    .outer-accent-segments {
+      position: absolute;
+      width: 366px;
+      height: 366px;
+      border-radius: 50%;
+      border: 2px dashed rgba(0, 240, 255, 0.6);
+      z-index: 1;
+      animation: rotateSlow 80s linear infinite;
+    }
+
+    @keyframes rotateSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Metallic Inner Chamfer */
+    .inner-chamfer {
+      position: absolute;
+      width: 290px;
+      height: 290px;
+      border-radius: 50%;
+      border: 4px solid #333d47;
+      box-shadow: inset 0 0 15px #000, 0 0 10px rgba(0,0,0,0.8);
+      z-index: 2;
+    }
+
+    /* Carbon Fiber Texture Plate (Digital Hub) */
+    .carbon-center {
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      background: 
+        linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+        linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
+        linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
+        linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+        linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+        linear-gradient(#111 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
+      background-size: 20px 20px;
+      border: 3px solid #00f0ff;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.95), 0 0 15px rgba(0, 240, 255, 0.4);
+      z-index: 7; /* Always on top of needle and pivot */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .carbon-center .badge {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      font-weight: 900;
+      color: #ff2222;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 6px rgba(255, 34, 34, 0.8);
+    }
+    .carbon-center .digital-readout {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 38px;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.8), 0 0 25px #00f0ff;
+      line-height: 1;
+      margin: 4px 0;
+    }
+    .carbon-center .unit-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: #00f0ff;
+      letter-spacing: 1px;
+    }
+    .carbon-center .sub-unit {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      color: #a0f0ff;
+      letter-spacing: 2px;
+    }
+
+    /* SVG Dial Face (Ticks & Numbers on top of needle) */
+    .dial-svg {
+      position: absolute;
+      width: 350px;
+      height: 350px;
+      z-index: 6; /* Render numbers and ticks ON TOP of needle */
+      pointer-events: none;
+    }
+
+    /* Animated Needle (Sweeps smoothly between center hub and ticks) */
+    .needle-container {
+      position: absolute;
+      width: 350px;
+      height: 350px;
+      z-index: 4; /* Behind center hub and behind numbers */
+      pointer-events: none;
+      transition: transform 0.2s cubic-bezier(0.1, 0.7, 0.1, 1);
+      transform-origin: 175px 175px;
+    }
+    .needle-pointer {
+      position: absolute;
+      top: 25px;
+      left: calc(50% - 2px);
+      width: 4px;
+      height: 55px; /* Extends from radius 100px (under hub) to 150px (at ticks) */
+      background: linear-gradient(to top, rgba(255, 215, 0, 0.95), #ffffff);
+      clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+      box-shadow: 0 0 10px #ffff00, 0 0 20px #ffea00;
+      filter: drop-shadow(0 0 6px #ffea00);
+    }
+    .needle-pivot {
+      display: none; /* No ugly dot in center of digital readout */
+    }
+      left: calc(50% - 10px);
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, #ff2222 30%, #333 70%);
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
+    }
+
+    /* Center Section (Data & Graph) */
+    .center-section {
+      flex: 1;
+      max-width: 500px;
+      margin: 0 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Center Mini Grid: ENG TORQ, MAX, LOAD */
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      gap: 8px;
+    }
+    .tel-card {
+      background: rgba(15, 15, 20, 0.75);
+      border: 1px solid #ff3b3b;
+      border-radius: 5px;
+      padding: 3px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      box-shadow: 0 0 6px rgba(255, 59, 59, 0.2);
+    }
+    .tel-card.yellow-border {
+      border-color: #ffd600;
+      box-shadow: 0 0 6px rgba(255, 214, 0, 0.2);
+    }
+    .tel-card.yellow-border .tel-title {
+      color: #ffd600;
+    }
+    .tel-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      color: #ff3b3b;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+    }
+    .tel-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    /* AFR Bars */
+    .afr-row {
+      display: flex;
+      width: 100%;
+      gap: 10px;
+      margin-top: 2px;
+    }
+    .afr-card {
+      flex: 1;
+      border: 1px solid #00f0ff;
+      border-radius: 6px;
+      padding: 4px 8px;
+      background: rgba(0, 15, 25, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .afr-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .afr-bar-container {
+      flex: 1;
+      margin: 0 8px;
+      height: 10px;
+      background: #111;
+      border-radius: 5px;
+      overflow: hidden;
+      border: 1px solid #333;
+    }
+    .afr-bar-fill {
+      width: 68%;
+      height: 100%;
+      background: linear-gradient(to right, #ffd000, #ff6600, #ff1744);
+      border-radius: 4px;
+      box-shadow: 0 0 8px #ff6600;
+    }
+    .afr-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    /* Live Power Chart */
+    .dyno-chart-box {
+      width: 100%;
+      height: 145px;
+      background: rgba(5, 7, 10, 0.85);
+      border: 1.5px solid #00f0ff;
+      border-radius: 6px;
+      position: relative;
+      box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.15), 0 0 10px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
+    }
+    .chart-grid-svg {
+      width: 100%;
+      height: 100%;
+    }
+    .customer-name-banner {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #ffffff;
+      text-transform: uppercase;
+      text-align: center;
+      margin: 2px 0;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Bottom Control Deck */
+    .bottom-deck {
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      gap: 10px;
+      border-top: 1px solid rgba(0, 240, 255, 0.25);
+      padding-top: 6px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .btn-group-column {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .col-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      color: #ffffff;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .btn-pill {
+      background: #000000;
+      border: 1.2px solid #00f0ff;
+      color: #ffffff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: center;
+      min-width: 82px;
+      box-shadow: 0 0 6px rgba(0, 240, 255, 0.2);
+      transition: all 0.15s ease;
+    }
+    .btn-pill:hover {
+      background: rgba(0, 240, 255, 0.25);
+      box-shadow: 0 0 12px #00f0ff;
+    }
+    .btn-pill.active {
+      background: #00f0ff;
+      color: #000;
+      box-shadow: 0 0 14px #00f0ff;
+    }
+
+    /* Center Load Mode Panel */
+    .center-load-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #ff2222;
+      border-radius: 8px;
+      padding: 5px 10px;
+      background: rgba(15, 5, 5, 0.6);
+      box-shadow: 0 0 10px rgba(255, 34, 34, 0.2);
+    }
+    .load-mode-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .load-buttons-row {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      justify-content: center;
+    }
+    .btn-mode {
+      background: transparent;
+      border: 1.2px solid #ffd600;
+      color: #ffffff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-mode.cyan {
+      border-color: #00f0ff;
+    }
+    .btn-mode.active-cyan {
+      background: #00f0ff;
+      color: #000000;
+      border-color: #00f0ff;
+      box-shadow: 0 0 12px #00f0ff;
+    }
+
+    /* Target RPM Controls */
+    .target-rpm-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 2px;
+    }
+    .target-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 2px;
+    }
+    .rpm-display-pill {
+      border: 1.5px solid #00f0ff;
+      border-radius: 16px;
+      padding: 2px 20px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      color: #ffffff;
+      background: rgba(0, 240, 255, 0.08);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    }
+    .btn-rpm-stepper {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      cursor: pointer;
+      padding: 0 6px;
+      transition: color 0.1s;
+    }
+    .btn-rpm-stepper:hover {
+      color: #00f0ff;
+      text-shadow: 0 0 8px #00f0ff;
+    }
+
+    /* Right Command Grid */
+    .right-cmd-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 250px;
+    }
+    .file-path-display {
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #00f0ff;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: 'Rajdhani', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: #00f0ff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+    .btn-grid-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+    }
+    .btn-cmd {
+      background: transparent;
+      border: 1.2px solid #00f0ff;
+      color: #ffffff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 5px 4px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+      box-shadow: 0 0 4px rgba(0, 240, 255, 0.2);
+    }
+    .btn-cmd:hover {
+      background: rgba(0, 240, 255, 0.2);
+      box-shadow: 0 0 8px #00f0ff;
+    }
+
+    /* Red Accent Lines Across Chassis */
+    .chassis-accent-left {
+      position: absolute;
+      top: 15px;
+      left: 12px;
+      width: 140px;
+      height: 2px;
+      background: linear-gradient(to right, #ff2222, transparent);
+    }
+    .chassis-accent-right {
+      position: absolute;
+      top: 15px;
+      right: 12px;
+      width: 140px;
+      height: 2px;
+      background: linear-gradient(to left, #ff2222, transparent);
+    }
+
+    /* Interactive Simulation Slider for Demo */
+    .demo-bar {
+      position: absolute;
+      bottom: -45px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 14px;
+      color: #00f0ff;
+    }
+    .demo-bar input[type="range"] {
+      width: 300px;
+      accent-color: #00f0ff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    <div class="chassis-accent-left"></div>
+    <div class="chassis-accent-right"></div>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <button class="btn-sci-fi">SETTING</button>
+
+      <div class="top-telemetry">
+        <div class="data-pill">
+          <span class="label">ENG HP</span>
+          <div class="val-box" id="topEngHp">35</div>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <div class="logo-kzr">KZR</div>
+        <div class="logo-dynomas">DYNO<span>MAS</span></div>
+        <div class="logo-sub">DYNO TUNING MACHINE</div>
+      </div>
+
+      <div class="top-telemetry">
+        <div class="data-pill">
+          <span class="label">RPM DYNO</span>
+          <div class="val-box" id="topRpmDyno">35</div>
+        </div>
+      </div>
+
+      <button class="btn-sci-fi active">ON-LINE</button>
+    </div>
+
+    <!-- CLUSTER ROW (GAUGE LEFT, CENTER GRAPH, GAUGE RIGHT) -->
+    <div class="cluster-row">
+
+      <!-- LEFT GAUGE: TACHOMETER (ENGINE RPM) -->
+      <div class="gauge-wrapper">
+        <div class="outer-glow-ring"></div>
+        <div class="outer-accent-segments"></div>
+        <div class="inner-chamfer"></div>
+
+        <!-- SVG Dial: Ticks & Numbers -->
+        <svg class="dial-svg" id="rpmDialSvg" viewBox="0 0 350 350"></svg>
+
+        <!-- Dynamic Needle -->
+        <div class="needle-container" id="rpmNeedle">
+          <div class="needle-pointer"></div>
+          <div class="needle-pivot"></div>
+        </div>
+
+        <!-- Carbon Center Hub -->
+        <div class="carbon-center">
+          <div class="badge">DYNOMAS</div>
+          <div class="digital-readout" id="rpmDigital">7546</div>
+          <div class="unit-label">ENGINE</div>
+          <div class="sub-unit">- RPM -</div>
+        </div>
+      </div>
+
+      <!-- CENTER SECTION: TELEMETRY & LIVE POWER GRAPH -->
+      <div class="center-section">
+
+        <!-- Mini Grid Row 1: TORQUE, MAX HP/NM, LOAD -->
+        <div class="telemetry-row">
+          <div class="tel-card">
+            <span class="tel-title">ENG TORQ</span>
+            <span class="tel-value" id="telTorq">35</span>
+          </div>
+          <div class="tel-card">
+            <span class="tel-title">Hp MAX</span>
+            <span class="tel-value" id="telMaxHp">48</span>
+          </div>
+          <div class="tel-card">
+            <span class="tel-title">Nm MAX</span>
+            <span class="tel-value" id="telMaxNm">39</span>
+          </div>
+          <div class="tel-card">
+            <span class="tel-title">LOAD</span>
+            <span class="tel-value" id="telLoad">10</span>
+          </div>
+        </div>
+
+        <!-- AFR Row -->
+        <div class="afr-row">
+          <div class="afr-card">
+            <span class="afr-label">AFR 1</span>
+            <div class="afr-bar-container">
+              <div class="afr-bar-fill" id="afrBar1"></div>
+            </div>
+            <span class="afr-value" id="afrVal1">12.8</span>
+          </div>
+          <div class="afr-card">
+            <span class="afr-label">AFR 2</span>
+            <div class="afr-bar-container">
+              <div class="afr-bar-fill" id="afrBar2"></div>
+            </div>
+            <span class="afr-value" id="afrVal2">12.8</span>
+          </div>
+        </div>
+
+        <!-- Sensors Grid: TPS, TEMP, IAT, MAP, VOLT -->
+        <div class="telemetry-row">
+          <div class="tel-card yellow-border">
+            <span class="tel-title">Tps %</span>
+            <span class="tel-value" id="sensorTps">70</span>
+          </div>
+          <div class="tel-card yellow-border">
+            <span class="tel-title">Temp c</span>
+            <span class="tel-value" id="sensorTemp">39</span>
+          </div>
+          <div class="tel-card yellow-border">
+            <span class="tel-title">Iat c</span>
+            <span class="tel-value" id="sensorIat">48</span>
+          </div>
+          <div class="tel-card yellow-border">
+            <span class="tel-title">Map kpa</span>
+            <span class="tel-value" id="sensorMap">57</span>
+          </div>
+          <div class="tel-card yellow-border">
+            <span class="tel-title">Volt V</span>
+            <span class="tel-value" id="sensorVolt">13.4</span>
+          </div>
+        </div>
+
+        <!-- Live Power Curve Graph -->
+        <div class="dyno-chart-box">
+          <svg class="chart-grid-svg" viewBox="0 0 500 145" preserveAspectRatio="none">
+            <!-- Subtle Grid Lines -->
+            <defs>
+              <pattern id="gridPattern" width="50" height="29" patternUnits="userSpaceOnUse">
+                <path d="M 50 0 L 0 0 0 29" fill="none" stroke="rgba(0, 240, 255, 0.08)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="500" height="145" fill="url(#gridPattern)" />
+
+            <!-- Cyan Curve: Horsepower -->
+            <path id="curveHp" d="M 10 125 Q 120 100, 220 50 T 400 35 Q 460 38, 480 140" fill="none" stroke="#00f0ff" stroke-width="2.5" filter="drop-shadow(0 0 5px #00f0ff)"/>
+
+            <!-- Red Curve: Torque -->
+            <path id="curveTorque" d="M 10 115 Q 140 70, 240 38 T 390 45 Q 450 55, 480 140" fill="none" stroke="#ff2a2a" stroke-width="2.5" filter="drop-shadow(0 0 5px #ff2a2a)"/>
+          </svg>
+        </div>
+
+        <div class="customer-name-banner">YOUR NAME HERE</div>
+      </div>
+
+      <!-- RIGHT GAUGE: SPEEDOMETER (KM/H) -->
+      <div class="gauge-wrapper">
+        <div class="outer-glow-ring"></div>
+        <div class="outer-accent-segments" style="animation-direction: reverse;"></div>
+        <div class="inner-chamfer"></div>
+
+        <!-- SVG Dial: Ticks & Numbers -->
+        <svg class="dial-svg" id="speedDialSvg" viewBox="0 0 350 350"></svg>
+
+        <!-- Dynamic Needle -->
+        <div class="needle-container" id="speedNeedle">
+          <div class="needle-pointer"></div>
+          <div class="needle-pivot"></div>
+        </div>
+
+        <!-- Carbon Center Hub -->
+        <div class="carbon-center">
+          <div class="badge">DYNOMAS</div>
+          <div class="digital-readout" id="speedDigital">107</div>
+          <div class="unit-label">SPEED</div>
+          <div class="sub-unit">- KM/H -</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BOTTOM DECK: CONTROLS & COMMANDS -->
+    <div class="bottom-deck">
+
+      <!-- Column 1: DISPLAY -->
+      <div class="btn-group-column">
+        <span class="col-title">DISPLAY</span>
+        <button class="btn-pill">INERTIA</button>
+        <button class="btn-pill active">LOADED</button>
+      </div>
+
+      <!-- Column 2: AUTO -->
+      <div class="btn-group-column">
+        <span class="col-title">AUTO</span>
+        <button class="btn-pill active">TUNE ASST</button>
+        <button class="btn-pill">INSTAGRAF</button>
+        <button class="btn-pill">LOAD</button>
+      </div>
+
+      <!-- Column 3: RPM -->
+      <div class="btn-group-column">
+        <span class="col-title">RPM</span>
+        <button class="btn-pill active">RPM : GR</button>
+        <button class="btn-pill">RPM : ENG</button>
+        <button class="btn-pill">RPM : DYNO</button>
+      </div>
+
+      <!-- Center Load Mode Panel -->
+      <div class="center-load-panel">
+        <div class="load-mode-title">SELECT LOAD MODE</div>
+        <div class="load-buttons-row">
+          <button class="btn-mode">MANUAL</button>
+          <button class="btn-mode cyan active-cyan">SPEED</button>
+          <button class="btn-mode">ACELLERATION</button>
+          <button class="btn-mode">2-POINT</button>
+        </div>
+
+        <div class="target-rpm-box">
+          <span class="target-label">TARGET RPM</span>
+          <button class="btn-rpm-stepper" onclick="stepTarget(-100)">-</button>
+          <div class="rpm-display-pill" id="targetRpmVal">7000</div>
+          <button class="btn-rpm-stepper" onclick="stepTarget(100)">+</button>
+        </div>
+      </div>
+
+      <!-- Right Command Grid -->
+      <div class="right-cmd-grid">
+        <div class="file-path-display">C:Data/New folder (2)/Run</div>
+        <div class="btn-grid-row">
+          <button class="btn-cmd">RUN FILE</button>
+          <button class="btn-cmd">GRAF</button>
+          <button class="btn-cmd">ECU / OBD</button>
+          <button class="btn-cmd">RATIO</button>
+          <button class="btn-cmd">TARE</button>
+          <button class="btn-cmd">RPM-1</button>
+          <button class="btn-cmd">RUN: 1</button>
+          <button class="btn-cmd" style="grid-column: span 2;">FAN CONTROL</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Live Throttle Demo Slider -->
+    <div class="demo-bar">
+      <span>🕹️ TEST THROTTLE / SIMULATION:</span>
+      <input type="range" id="throttleSlider" min="0" max="15000" value="7546" oninput="updateSimulation(this.value)">
+      <span id="sliderValue">7546 RPM</span>
+    </div>
+  </div>
+
+  <script>
+    // Build RPM Gauge Dial (0 to 15, 270 degrees sweep)
+    function buildRpmDial() {
+      const svg = document.getElementById('rpmDialSvg');
+      const cx = 175, cy = 175, rTicks = 148, rNums = 118;
+      const startAngle = 135; // degrees (7:30 o'clock)
+      const sweepAngle = 270;
+      const maxRpm = 15;
+
+      let html = '';
+
+      // Outer Redline Arc (from 10 to 15 RPM)
+      const redStartDeg = startAngle + ((10 / maxRpm) * sweepAngle);
+      const redEndDeg = startAngle + sweepAngle;
+      const rArc = 150;
+      const rad1 = (redStartDeg * Math.PI) / 180;
+      const rad2 = (redEndDeg * Math.PI) / 180;
+      const arcX1 = cx + (rArc * Math.cos(rad1));
+      const arcY1 = cy + (rArc * Math.sin(rad1));
+      const arcX2 = cx + (rArc * Math.cos(rad2));
+      const arcY2 = cy + (rArc * Math.sin(rad2));
+      html += `<path d="M ${arcX1} ${arcY1} A ${rArc} ${rArc} 0 0 1 ${arcX2} ${arcY2}" fill="none" stroke="#ff1e27" stroke-width="4.5" stroke-linecap="round" filter="drop-shadow(0 0 6px #ff1e27)"/>`;
+
+      for (let i = 0; i <= maxRpm; i++) {
+        const frac = i / maxRpm;
+        const deg = startAngle + (frac * sweepAngle);
+        const rad = (deg * Math.PI) / 180;
+
+        // Major Tick
+        const x1 = cx + (rTicks * Math.cos(rad));
+        const y1 = cy + (rTicks * Math.sin(rad));
+        const x2 = cx + ((rTicks - 11) * Math.cos(rad));
+        const y2 = cy + ((rTicks - 11) * Math.sin(rad));
+
+        const isRedline = i >= 10;
+        const color = isRedline ? '#ff1e27' : '#ffffff';
+        const glow = isRedline ? 'filter="drop-shadow(0 0 4px #ff1e27)"' : 'filter="drop-shadow(0 0 3px #00f0ff)"';
+
+        html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${i % 2 === 0 ? 3.5 : 2.5}" ${glow}/>`;
+
+        // Minor ticks (subdivisions)
+        if (i < maxRpm) {
+          for (let m = 1; m < 5; m++) {
+            const subFrac = (i + m * 0.2) / maxRpm;
+            const subDeg = startAngle + (subFrac * sweepAngle);
+            const subRad = (subDeg * Math.PI) / 180;
+            const sx1 = cx + (rTicks * Math.cos(subRad));
+            const sy1 = cy + (rTicks * Math.sin(subRad));
+            const sx2 = cx + ((rTicks - 6) * Math.cos(subRad));
+            const sy2 = cy + ((rTicks - 6) * Math.sin(subRad));
+            const subColor = (i >= 10) ? '#ff2a2a' : 'rgba(0, 240, 255, 0.7)';
+            html += `<line x1="${sx1}" y1="${sy1}" x2="${sx2}" y2="${sy2}" stroke="${subColor}" stroke-width="1.2"/>`;
+          }
+        }
+
+        // Numbers (0 to 15) with dark outline so needle never obscures them
+        const nx = cx + (rNums * Math.cos(rad));
+        const ny = cy + (rNums * Math.sin(rad)) + 6;
+        html += `<text x="${nx}" y="${ny}" text-anchor="middle" font-family="'Orbitron', sans-serif" font-size="15" font-weight="900" fill="${color}" stroke="#000000" stroke-width="3" paint-order="stroke fill" ${glow}>${i}</text>`;
+      }
+
+      svg.innerHTML = html;
+    }
+
+    // Build Speed Gauge Dial (0 to 240 KM/H, 270 degrees sweep)
+    function buildSpeedDial() {
+      const svg = document.getElementById('speedDialSvg');
+      const cx = 175, cy = 175, rTicks = 148, rNums = 118;
+      const startAngle = 135;
+      const sweepAngle = 270;
+      const maxSpeed = 240;
+      const step = 20;
+
+      let html = '';
+
+      // Outer Redline Arc (from 180 to 240 KM/H)
+      const redStartDeg = startAngle + ((180 / maxSpeed) * sweepAngle);
+      const redEndDeg = startAngle + sweepAngle;
+      const rArc = 150;
+      const rad1 = (redStartDeg * Math.PI) / 180;
+      const rad2 = (redEndDeg * Math.PI) / 180;
+      const arcX1 = cx + (rArc * Math.cos(rad1));
+      const arcY1 = cy + (rArc * Math.sin(rad1));
+      const arcX2 = cx + (rArc * Math.cos(rad2));
+      const arcY2 = cy + (rArc * Math.sin(rad2));
+      html += `<path d="M ${arcX1} ${arcY1} A ${rArc} ${rArc} 0 0 1 ${arcX2} ${arcY2}" fill="none" stroke="#ff1e27" stroke-width="4.5" stroke-linecap="round" filter="drop-shadow(0 0 6px #ff1e27)"/>`;
+
+      for (let s = 0; s <= maxSpeed; s += step) {
+        const frac = s / maxSpeed;
+        const deg = startAngle + (frac * sweepAngle);
+        const rad = (deg * Math.PI) / 180;
+
+        const isRedline = s >= 180;
+        const color = isRedline ? '#ff1e27' : '#ffffff';
+        const glow = isRedline ? 'filter="drop-shadow(0 0 4px #ff1e27)"' : 'filter="drop-shadow(0 0 3px #00f0ff)"';
+
+        // Major Tick
+        const x1 = cx + (rTicks * Math.cos(rad));
+        const y1 = cy + (rTicks * Math.sin(rad));
+        const x2 = cx + ((rTicks - 11) * Math.cos(rad));
+        const y2 = cy + ((rTicks - 11) * Math.sin(rad));
+        html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="3.5" ${glow}/>`;
+
+        // Minor ticks
+        if (s < maxSpeed) {
+          const subFrac = (s + 10) / maxSpeed;
+          const subDeg = startAngle + (subFrac * sweepAngle);
+          const subRad = (subDeg * Math.PI) / 180;
+          const sx1 = cx + (rTicks * Math.cos(subRad));
+          const sy1 = cy + (rTicks * Math.sin(subRad));
+          const sx2 = cx + ((rTicks - 7) * Math.cos(subRad));
+          const sy2 = cy + ((rTicks - 7) * Math.sin(subRad));
+          const subColor = (s >= 180) ? '#ff2a2a' : 'rgba(0, 240, 255, 0.7)';
+          html += `<line x1="${sx1}" y1="${sy1}" x2="${sx2}" y2="${sy2}" stroke="${subColor}" stroke-width="1.8"/>`;
+        }
+
+        // Numbers with dark outline
+        const nx = cx + (rNums * Math.cos(rad));
+        const ny = cy + (rNums * Math.sin(rad)) + 6;
+        html += `<text x="${nx}" y="${ny}" text-anchor="middle" font-family="'Orbitron', sans-serif" font-size="13" font-weight="900" fill="${color}" stroke="#000000" stroke-width="3" paint-order="stroke fill" ${glow}>${s}</text>`;
+      }
+
+      svg.innerHTML = html;
+    }
+          html += `<line x1="${sx1}" y1="${sy1}" x2="${sx2}" y2="${sy2}" stroke="${subColor}" stroke-width="1.8"/>`;
+        }
+
+        // Numbers
+        const nx = cx + (rNums * Math.cos(rad));
+        const ny = cy + (rNums * Math.sin(rad)) + 6;
+        html += `<text x="${nx}" y="${ny}" text-anchor="middle" font-family="'Orbitron', sans-serif" font-size="14" font-weight="900" fill="${color}" ${glow}>${s}</text>`;
+      }
+
+      svg.innerHTML = html;
+    }
+
+    // Needle Angle Calculation
+    function setRpm(rpm) {
+      const minAngle = -135; // at 0
+      const maxAngle = 135;  // at 15,000
+      const frac = Math.min(Math.max(rpm / 15000, 0), 1);
+      const angle = minAngle + (frac * 270);
+      document.getElementById('rpmNeedle').style.transform = `rotate(${angle}deg)`;
+      document.getElementById('rpmDigital').innerText = Math.round(rpm);
+    }
+
+    function setSpeed(kmh) {
+      const minAngle = -135;
+      const maxAngle = 135;
+      const frac = Math.min(Math.max(kmh / 240, 0), 1);
+      const angle = minAngle + (frac * 270);
+      document.getElementById('speedNeedle').style.transform = `rotate(${angle}deg)`;
+      document.getElementById('speedDigital').innerText = Math.round(kmh);
+    }
+
+    // Simulation Slider
+    function updateSimulation(val) {
+      const rpm = parseFloat(val);
+      setRpm(rpm);
+
+      // Approximate speed linked to gear ratio for demo
+      const speed = (rpm / 15000) * 215;
+      setSpeed(speed);
+
+      document.getElementById('sliderValue').innerText = Math.round(rpm) + " RPM";
+
+      // Live sensors variation
+      const hp = (rpm / 15000) * 48;
+      document.getElementById('topEngHp').innerText = Math.round(hp);
+      document.getElementById('telTorq').innerText = Math.round(30 + Math.sin(rpm / 2000) * 10);
+      document.getElementById('sensorTps').innerText = Math.round((rpm / 15000) * 100);
+      document.getElementById('sensorTemp').innerText = Math.round(38 + (rpm / 15000) * 15);
+    }
+
+    let targetRpm = 7000;
+    function stepTarget(delta) {
+      targetRpm += delta;
+      if (targetRpm < 1000) targetRpm = 1000;
+      if (targetRpm > 15000) targetRpm = 15000;
+      document.getElementById('targetRpmVal').innerText = targetRpm;
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      buildRpmDial();
+      buildSpeedDial();
+      setRpm(7546);
+      setSpeed(107);
+    });
+  </script>
+</body>
+</html>
