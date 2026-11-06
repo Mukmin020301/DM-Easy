@@ -1,0 +1,22 @@
+## Build and Release Folders
+[Bb]in/
+[Oo]bj/
+[Pp]ublish/
+UniDyn/UniDyn/publish/
+
+## Visual Studio user-specific and cache files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.dbmdl
+
+## Temporary files & OS files
+*.tmp
+*.bak
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
