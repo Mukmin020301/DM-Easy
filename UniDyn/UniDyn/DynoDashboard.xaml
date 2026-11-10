@@ -138,7 +138,7 @@
             <StackPanel Grid.Column="1" Margin="25,0,0,0" HorizontalAlignment="Center">
                 <TextBlock Text="ENG HP" Foreground="#FF3B3B" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"/>
                 <Border BorderBrush="#FF3B3B" BorderThickness="1.5" CornerRadius="5" Background="#150808" Padding="14,2" Margin="0,2,0,0">
-                    <TextBlock x:Name="TxtTopHp" Text="35" Foreground="#FFFFFF" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="TxtTopHp" Text="0.0" Foreground="#FFFFFF" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center"/>
                 </Border>
             </StackPanel>
 
@@ -156,12 +156,12 @@
             <StackPanel Grid.Column="3" Margin="0,0,25,0" HorizontalAlignment="Center">
                 <TextBlock Text="RPM DYNO" Foreground="#FF3B3B" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"/>
                 <Border BorderBrush="#FF3B3B" BorderThickness="1.5" CornerRadius="5" Background="#150808" Padding="14,2" Margin="0,2,0,0">
-                    <TextBlock x:Name="TxtTopRpmDyno" Text="35" Foreground="#FFFFFF" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="TxtTopRpmDyno" Text="0" Foreground="#FFFFFF" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center"/>
                 </Border>
             </StackPanel>
 
             <!-- On-Line Button -->
-            <Button Grid.Column="4" Content="ON-LINE" Style="{StaticResource ActiveCyanButton}" Width="90" Height="32"/>
+            <Button x:Name="BtnOnline" Grid.Column="4" Content="ON-LINE" Style="{StaticResource ActiveCyanButton}" Width="105" Height="32" Click="BtnOnline_Click" ToolTip="Click to check or reconnect COM4 status"/>
         </Grid>
 
         <!-- ================= CENTER MAIN AREA (TACHO LEFT | EXPANDED GRAPH CENTER | SPEEDO RIGHT) ================= -->
@@ -215,7 +215,7 @@
                     <!-- Inner Digital Readout -->
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                         <TextBlock Text="DYNOMAS" Foreground="#FF2222" FontWeight="Black" FontSize="11" HorizontalAlignment="Center" Effect="{StaticResource RedGlow}"/>
-                        <TextBlock x:Name="TxtDigitalRpm" Text="7546" Foreground="#FFFFFF" FontWeight="Black" FontSize="42" HorizontalAlignment="Center" Margin="0,1" Effect="{StaticResource WhiteTextGlow}"/>
+                        <TextBlock x:Name="TxtDigitalRpm" Text="0" Foreground="#FFFFFF" FontWeight="Black" FontSize="42" HorizontalAlignment="Center" Margin="0,1" Effect="{StaticResource WhiteTextGlow}"/>
                         <TextBlock Text="ENGINE" Foreground="#00F0FF" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center"/>
                         <TextBlock Text="- RPM -" Foreground="#70DFFF" FontWeight="SemiBold" FontSize="9.5" HorizontalAlignment="Center"/>
                     </StackPanel>
@@ -243,28 +243,28 @@
                     <Border Grid.Column="0" BorderBrush="#FF3B3B" BorderThickness="1.2" CornerRadius="5" Background="#120606" Padding="6,3" Margin="2">
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock Text="ENG TORQ" Foreground="#FF3B3B" FontWeight="Bold" FontSize="10.5" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="TxtTorq" Text="35" Foreground="#FFFFFF" FontWeight="Black" FontSize="17" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtTorq" Text="0.0" Foreground="#FFFFFF" FontWeight="Black" FontSize="17" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Border>
 
                     <Border Grid.Column="1" BorderBrush="#FF3B3B" BorderThickness="1.2" CornerRadius="5" Background="#120606" Padding="6,3" Margin="2">
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock Text="Hp MAX" Foreground="#FF3B3B" FontWeight="Bold" FontSize="10.5" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="TxtMaxHp" Text="48" Foreground="#FFFFFF" FontWeight="Black" FontSize="17" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtMaxHp" Text="0.0" Foreground="#FFFFFF" FontWeight="Black" FontSize="17" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Border>
 
                     <Border Grid.Column="2" BorderBrush="#FF3B3B" BorderThickness="1.2" CornerRadius="5" Background="#120606" Padding="6,3" Margin="2">
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock Text="Nm MAX" Foreground="#FF3B3B" FontWeight="Bold" FontSize="10.5" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="TxtMaxNm" Text="39" Foreground="#FFFFFF" FontWeight="Black" FontSize="17" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtMaxNm" Text="0.0" Foreground="#FFFFFF" FontWeight="Black" FontSize="17" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Border>
 
                     <Border Grid.Column="3" BorderBrush="#FF3B3B" BorderThickness="1.2" CornerRadius="5" Background="#120606" Padding="6,3" Margin="2">
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock Text="LOAD" Foreground="#FF3B3B" FontWeight="Bold" FontSize="10.5" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="TxtLoad" Text="10" Foreground="#FFFFFF" FontWeight="Black" FontSize="17" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtLoad" Text="0" Foreground="#FFFFFF" FontWeight="Black" FontSize="17" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -336,7 +336,7 @@
                                 <Border Width="12" Height="3" Background="#FF3B3B" VerticalAlignment="Center" Margin="16,0,4,0"/>
                                 <TextBlock Text="TORQUE (Nm)" Foreground="#FF3B3B" FontWeight="Bold" FontSize="10.5" VerticalAlignment="Center"/>
                             </StackPanel>
-                            <TextBlock Text="RPM SPAN: 2,000 - 14,000" Foreground="#3A6677" FontWeight="SemiBold" FontSize="9.5" HorizontalAlignment="Right"/>
+                            <TextBlock Text="RPM SPAN: 0 - 15,000" Foreground="#3A6677" FontWeight="SemiBold" FontSize="9.5" HorizontalAlignment="Right"/>
                         </Grid>
 
                         <!-- Canvas for Grid Lines & Axis Scales -->
@@ -398,7 +398,7 @@
                         <!-- Inner Text -->
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock Text="DYNOMAS" Foreground="#FF2222" FontWeight="Black" FontSize="9.5" HorizontalAlignment="Center" Effect="{StaticResource RedGlow}"/>
-                            <TextBlock x:Name="TxtDigitalSpeed" Text="108" Foreground="#FFFFFF" FontWeight="Black" FontSize="34" HorizontalAlignment="Center" Margin="0,1" Effect="{StaticResource WhiteTextGlow}"/>
+                            <TextBlock x:Name="TxtDigitalSpeed" Text="0" Foreground="#FFFFFF" FontWeight="Black" FontSize="34" HorizontalAlignment="Center" Margin="0,1" Effect="{StaticResource WhiteTextGlow}"/>
                             <TextBlock Text="SPEED" Foreground="#00F0FF" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"/>
                             <TextBlock Text="- KM/H -" Foreground="#70DFFF" FontWeight="SemiBold" FontSize="8.5" HorizontalAlignment="Center"/>
                         </StackPanel>
@@ -421,7 +421,7 @@
                     <Border Grid.Row="0" Grid.Column="0" BorderBrush="#FFD600" BorderThickness="1" CornerRadius="4" Background="#0F0D04" Padding="2,3" Margin="2">
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock Text="TPS %" Foreground="#FFD600" FontWeight="Bold" FontSize="9" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="TxtTps" Text="50" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtTps" Text="0" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Border>
 
@@ -534,8 +534,8 @@
 
                         <!-- Row 1: Primary Critical Tuner Buttons -->
                         <Button x:Name="BtnRunFile" Grid.Row="0" Grid.Column="0" Content="▶ RUN PULL" Style="{StaticResource RunPullButton}" Margin="2" FontSize="11" Click="BtnRunFile_Click"/>
-                        <Button x:Name="BtnTare" Grid.Row="0" Grid.Column="1" Content="TARE ⚖" Style="{StaticResource TareButton}" Margin="2" FontSize="11"/>
-                        <Button x:Name="BtnFan" Grid.Row="0" Grid.Column="2" Content="FAN 🌀" Style="{StaticResource FanGreenButton}" Margin="2" FontSize="11"/>
+                        <Button x:Name="BtnTare" Grid.Row="0" Grid.Column="1" Content="TARE ⚖" Style="{StaticResource TareButton}" Margin="2" FontSize="11" Click="BtnTare_Click"/>
+                        <Button x:Name="BtnFan" Grid.Row="0" Grid.Column="2" Content="FAN 🌀" Style="{StaticResource FanGreenButton}" Margin="2" FontSize="11" Click="BtnFan_Click"/>
 
                         <!-- Row 2: Secondary Utility Buttons -->
                         <Button Grid.Row="1" Grid.Column="0" Content="GRAF" Style="{StaticResource SciFiButton}" Margin="2" FontSize="10"/>
@@ -546,13 +546,51 @@
             </Grid>
         </Border>
 
-        <!-- ================= TEST THROTTLE SLIDER (DOCK AT BOTTOM) ================= -->
-        <Border Grid.Row="3" Background="#050C12" BorderBrush="#122A38" BorderThickness="1" CornerRadius="5" Padding="8,4" Margin="0,6,0,0">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBlock Text="🕹️ TEST THROTTLE / SIMULATION:" Foreground="#00F0FF" FontWeight="Bold" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,0"/>
-                <Slider x:Name="SliderThrottle" Width="360" Minimum="0" Maximum="15000" Value="7546" ValueChanged="SliderThrottle_ValueChanged"/>
-                <TextBlock x:Name="TxtSliderVal" Text="7546 RPM" Foreground="#00F0FF" FontWeight="Bold" FontSize="12.5" VerticalAlignment="Center" Margin="12,0,0,0"/>
-            </StackPanel>
+        <!-- ================= ATPS / BENCH DYNO SPEED ANALOG OUTPUT CONTROLLER ================= -->
+        <Border Grid.Row="3" Background="#060E14" BorderBrush="#00F0FF" BorderThickness="1.2" CornerRadius="6" Padding="10,5" Margin="0,6,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/> <!-- Title / Label -->
+                    <ColumnDefinition Width="Auto"/> <!-- STOP / IDLE Button -->
+                    <ColumnDefinition Width="Auto"/> <!-- Stepper - -->
+                    <ColumnDefinition Width="*"/>    <!-- Slider -->
+                    <ColumnDefinition Width="Auto"/> <!-- Stepper + -->
+                    <ColumnDefinition Width="Auto"/> <!-- Digital Voltage / Pct Readout -->
+                    <ColumnDefinition Width="Auto"/> <!-- Preset Buttons -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Title / Label -->
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                    <TextBlock Text="⚡ BENCH DYNO SPEED CONTROL" Foreground="#00F0FF" FontWeight="Black" FontSize="11" Effect="{StaticResource CyanSoftGlow}"/>
+                    <TextBlock Text="ANALOG OUTPUT / ATPS (0 - 5V)" Foreground="#88A0B0" FontWeight="SemiBold" FontSize="9"/>
+                </StackPanel>
+
+                <!-- 0% STOP Button (Safety Red) -->
+                <Button x:Name="BtnAtpsZero" Grid.Column="1" Content="⛔ 0% STOP" Background="#2A0808" Foreground="#FF4444" BorderBrush="#FF2222" BorderThickness="1.5" FontWeight="Black" FontSize="11" Height="30" Padding="8,0" Margin="0,0,8,0" Click="BtnAtpsZero_Click" Cursor="Hand"/>
+
+                <!-- Stepper - -->
+                <Button x:Name="BtnAtpsMinus" Grid.Column="2" Content="◄ -2%" Style="{StaticResource SciFiButton}" Width="45" Height="30" FontSize="10" Margin="0,0,6,0" Click="BtnAtpsMinus_Click" Cursor="Hand"/>
+
+                <!-- Main Slider (0 - 100%) -->
+                <Slider x:Name="SliderAtps" Grid.Column="3" Minimum="0" Maximum="100" Value="0" SmallChange="1" LargeChange="5" Height="26" VerticalAlignment="Center" Margin="6,0" ValueChanged="SliderAtps_ValueChanged" PreviewMouseUp="SliderAtps_MouseUp" Cursor="Hand"/>
+
+                <!-- Stepper + -->
+                <Button x:Name="BtnAtpsPlus" Grid.Column="4" Content="+2% ►" Style="{StaticResource SciFiButton}" Width="45" Height="30" FontSize="10" Margin="6,0,10,0" Click="BtnAtpsPlus_Click" Cursor="Hand"/>
+
+                <!-- Digital Readout Badge -->
+                <Border Grid.Column="5" BorderBrush="#00FF88" BorderThickness="1.5" CornerRadius="5" Background="#051810" Padding="10,3" Margin="0,0,10,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="TxtAtpsVal" Text="0.0% (0.00V)" Foreground="#00FF88" FontWeight="Black" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+
+                <!-- Quick Presets -->
+                <StackPanel Grid.Column="6" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="20%" Tag="20" Style="{StaticResource SciFiButton}" Width="36" Height="28" FontSize="9.5" Margin="2,0" Click="BtnAtpsPreset_Click" Cursor="Hand"/>
+                    <Button Content="40%" Tag="40" Style="{StaticResource SciFiButton}" Width="36" Height="28" FontSize="9.5" Margin="2,0" Click="BtnAtpsPreset_Click" Cursor="Hand"/>
+                    <Button Content="60%" Tag="60" Style="{StaticResource SciFiButton}" Width="36" Height="28" FontSize="9.5" Margin="2,0" Click="BtnAtpsPreset_Click" Cursor="Hand"/>
+                    <Button Content="80%" Tag="80" Style="{StaticResource SciFiButton}" Width="36" Height="28" FontSize="9.5" Margin="2,0" Click="BtnAtpsPreset_Click" Cursor="Hand"/>
+                    <Button Content="100%" Tag="100" Style="{StaticResource SciFiButton}" Width="42" Height="28" FontSize="9.5" Margin="2,0" Click="BtnAtpsPreset_Click" Cursor="Hand"/>
+                </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 </Window>

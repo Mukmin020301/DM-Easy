@@ -127,6 +127,8 @@ Public Class UniDyn
     Private WithEvents FOBD As New FOBD                             'OBD Controls
     Dim WithEvents OBDport As New SerialPort
     Public Shared wpfDash As DynoDashboard = Nothing
+    Public Shared Instance As UniDyn = Nothing
+    Private Shared CmdQueue As New System.Collections.Concurrent.ConcurrentQueue(Of String)()
 
 
     Public OBDon, OBDchon(20), OBDSlow As Boolean                           'OBDSlow = Send PID requests one-by-one
@@ -255,6 +257,7 @@ Public Class UniDyn
 
     Public Sub New() ' This call is required by "the designer", (whatever that means). Basically you set up the initial defaults here. 
         InitializeComponent()
+        Instance = Me
         rs.FindAllControls(Me) 'For form autoresize
         Me.FormBorderStyle = FormBorderStyle.Sizable
         Me.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show
@@ -571,7 +574,9 @@ Public Class UniDyn
         Try
             COMport.Open()
             Sleep(100)
-            COMport.WriteLine("M0")                'Set to ZERO load 
+            COMport.Write("V")                     'Enable Verbose data streaming
+            Sleep(50)
+            COMport.Write("M0")                    'Set to ZERO load 
         Catch ex As Exception                       'This only allows 1 retry!!!
 
             serports = ""
@@ -704,7 +709,7 @@ Public Class UniDyn
         dynotype = "Unknown"
         diam = 0.3
         inert = 0
-        compt = 3
+        compt = 4
         comBR = 115200          '9600
 
         brekload = 10
@@ -1427,24 +1432,34 @@ Public Class UniDyn
                                     If InStr(rundatafile, ".") > 4 Then runfile = Mid(rundatafile, 1, InStr(rundatafile, ".") - 4) 'Trim
                                 End If
                                 rundatafile = rundatafile.Replace("  ", " ")
-                                FileClose(4)
-                                FileOpen(4, rundatafile, OpenMode.Output) ' Has puked on this line "Cant find part of the path" when got crazy path name
-                                PrintLine(4, "Focus Applied Technologies DynoMas Pull Version: " + ver + "    Opened: " + Now)
-                                PrintLine(4, "Pull Data File: " + rundatafile + ",   Run #: " + Str(run) + ",    Points: " + Str(dataindex) + ",    Time: " + timelaps.ToString("N2"))
-                                PrintLine(4, " ")
-                                Print(4, "Time")
-                                For i = 1 To chan
-                                    Print(4, "," + alab(i))
-                                Next
-                                PrintLine(4, " ")
-                                For i = 1 To dataindex
-                                    For j = 1 To chan + 1                                 'Max # of Channels plus 1
-                                        Print(4, Str(pulldata(dic, i, j)) + ", ")
+                                Try
+                                    Dim saveDir As String = System.IO.Path.GetDirectoryName(rundatafile)
+                                    If String.IsNullOrEmpty(saveDir) OrElse saveDir.ToUpper().Contains("MOTOTAN") OrElse Not System.IO.Directory.Exists(saveDir) Then
+                                        saveDir = "C:\Dynomas"
+                                        If Not System.IO.Directory.Exists(saveDir) Then System.IO.Directory.CreateDirectory(saveDir)
+                                        rundatafile = System.IO.Path.Combine(saveDir, System.IO.Path.GetFileName(rundatafile))
+                                    End If
+                                    FileClose(4)
+                                    FileOpen(4, rundatafile, OpenMode.Output)
+                                    PrintLine(4, "Focus Applied Technologies DynoMas Pull Version: " + ver + "    Opened: " + Now)
+                                    PrintLine(4, "Pull Data File: " + rundatafile + ",   Run #: " + Str(run) + ",    Points: " + Str(dataindex) + ",    Time: " + timelaps.ToString("N2"))
+                                    PrintLine(4, " ")
+                                    Print(4, "Time")
+                                    For i = 1 To chan
+                                        Print(4, "," + alab(i))
                                     Next
                                     PrintLine(4, " ")
-                                Next
-                                PrintLine(4, "END")                                       'End Of Line
-                                FileClose(4)
+                                    For i = 1 To dataindex
+                                        For j = 1 To chan + 1                                 'Max # of Channels plus 1
+                                            Print(4, Str(pulldata(dic, i, j)) + ", ")
+                                        Next
+                                        PrintLine(4, " ")
+                                    Next
+                                    PrintLine(4, "END")                                       'End Of Line
+                                    FileClose(4)
+                                Catch exSave As Exception
+                                    Try : FileClose(4) : Catch : End Try
+                                End Try
                             End If
                             'Purge Serialcoms
                             COMport.DiscardInBuffer()
@@ -1454,7 +1469,7 @@ Public Class UniDyn
                     If brek2p = True Then
                         pload = load2                                               'Break using 2-point Load (Stop % Load)
                     Else
-                        pload = brekload                                            'Break using Breaking Cal Load
+                        pload = BREKload                                            'Break using Breaking Cal Load
                     End If
                     If brekramp = True Then
                         If brekstop = True Then                                     'Ramps down from RPM2 to RPM1
@@ -1622,7 +1637,7 @@ Public Class UniDyn
                     OBDport.Write(OBDpT)
                     FOBD.Lout.Text += OBDpT
                 End If
-             
+
             End If
         Else
             If OBDcnt >= OBSkips Then 'Send OBD Pings
@@ -1689,7 +1704,7 @@ Public Class UniDyn
                 Case "M" : OBDport.Parity = Parity.Mark
                 Case "S" : OBDport.Parity = Parity.Space
             End Select
-      
+
             serports = ""
             Try
                 OBDport.Open()
@@ -1790,7 +1805,7 @@ Public Class UniDyn
                     FOBD.Bopen.Text = "CLOSE PORT"
                 Else
                     OBDon = False                           'Cant Open it
-            End If
+                End If
             End If
         End If
     End Sub
@@ -2271,12 +2286,18 @@ Public Class UniDyn
                                 pGrafAnaCh = Val(arg)
                             Case "datapath"
                                 DataPath = arg.TrimEnd(",")
+                                If DataPath.ToUpper().Contains("MOTOTAN") OrElse Not System.IO.Directory.Exists(DataPath) Then
+                                    DataPath = "C:\Dynomas"
+                                End If
                             Case "pull2rpm"
                                 peng2 = Val(arg)
                             Case "pullduration"
                                 PullDur = Val(arg)
                             Case "runfile"
                                 runfile = arg.TrimEnd(",")
+                                If runfile.ToUpper().Contains("MOTOTAN") Then
+                                    runfile = "C:\Dynomas\RUN"
+                                End If
                             Case "tunecfg"
                                 TuneCal = arg.TrimEnd(",")
                                 'Console.WriteLine("Load1: " + TuneCal)
@@ -2382,7 +2403,7 @@ Public Class UniDyn
                             Case "remote"
                                 If arg = "True" Or arg = "False" Then remote = arg
                             Case "breakload"
-                                brekload = Val(arg)
+                                BREKload = Val(arg)
                             Case "remotechannel"
                                 remch = Val(arg)
                             Case "screenrefresh"
@@ -2732,7 +2753,7 @@ Public Class UniDyn
             FileWrite.WriteLine("Break2Point," + Str(brek2p))
             FileWrite.WriteLine("BreakRamp," + Str(brekramp))
             FileWrite.WriteLine("BreakStop," + Str(brekstop))
-            FileWrite.WriteLine("BreakLoad," + Str(brekload))
+            FileWrite.WriteLine("BreakLoad," + Str(BREKload))
             FileWrite.WriteLine("Remote," + Str(remote))
             FileWrite.WriteLine("ScreenRefresh," + Str(refresh))
             FileWrite.WriteLine("RemoteChannel," + Str(remch))
@@ -3151,6 +3172,14 @@ Public Class UniDyn
         If serenab = True Then
             Try
                 RXtxt = COMport.ReadLine
+
+                ' Hantar arahan segerak selepas terima data Z packet
+                Dim nextCmd As String = Nothing
+                If CmdQueue.TryDequeue(nextCmd) AndAlso Not String.IsNullOrEmpty(nextCmd) Then
+                    If COMport.IsOpen Then
+                        COMport.Write(nextCmd)
+                    End If
+                End If
 
                 If Len(RXtxt) < 10 Then RXtxt = ""
                 ' If rement = True Then                   'Allow Button 3 on Remote to trigger "ENTER" key
@@ -3738,7 +3767,7 @@ Public Class UniDyn
             Cals.tMNR.Text = amintix(Calch)
             Cals.tDEC.Text = adec(Calch)
 
-            Cals.TBBLoad.Text = brekload
+            Cals.TBBLoad.Text = BREKload
             Cals.RB2PS.Checked = brek2p
             Cals.RBLoad.Checked = Not brek2p
             Cals.CBRamp.Checked = brekramp
@@ -3753,7 +3782,7 @@ Public Class UniDyn
         Cals.Hide()
 
         remote = Cals.CBRemote.Checked
-        brekload = Val(Cals.TBBLoad.Text)
+        BREKload = Val(Cals.TBBLoad.Text)
         brek2p = Cals.RB2PS.Checked
         brekramp = Cals.CBRamp.Checked
         brekstop = Cals.CBStart.Checked
@@ -4546,21 +4575,76 @@ Public Class UniDyn
                 If saveresult = DialogResult.OK Then
                     rundatafile = .FileName
                     If InStr(rundatafile, ".") > 3 Then runfile = Mid(rundatafile, 1, InStr(rundatafile, ".") - 3) 'Trim
-                    FileClose(5)
-                    FileOpen(5, rundatafile, OpenMode.Output)
-                    PrintLine(5, "Focus Applied Technologies DynoMas Log Version: " + ver + "    Opened: " + Now)
-                    PrintLine(5, " ")
-                    Print(5, "Time")
-                    For i = 1 To chan
-                        Print(5, "," + alab(i))
-                    Next
-                    PrintLine(5, " ")
-                    logon = True
+                    Try
+                        Dim logDir As String = System.IO.Path.GetDirectoryName(rundatafile)
+                        If String.IsNullOrEmpty(logDir) OrElse logDir.ToUpper().Contains("MOTOTAN") OrElse Not System.IO.Directory.Exists(logDir) Then
+                            logDir = "C:\Dynomas"
+                            If Not System.IO.Directory.Exists(logDir) Then System.IO.Directory.CreateDirectory(logDir)
+                            rundatafile = System.IO.Path.Combine(logDir, System.IO.Path.GetFileName(rundatafile))
+                        End If
+                        FileClose(5)
+                        FileOpen(5, rundatafile, OpenMode.Output)
+                        PrintLine(5, "Focus Applied Technologies DynoMas Log Version: " + ver + "    Opened: " + Now)
+                        PrintLine(5, " ")
+                        Print(5, "Time")
+                        For i = 1 To chan
+                            Print(5, "," + alab(i))
+                        Next
+                        PrintLine(5, " ")
+                        logon = True
+                    Catch exLog As Exception
+                        Try : FileClose(5) : Catch : End Try
+                    End Try
                 End If
             End With
         Else : logon = False
         End If
     End Sub
+
+    Public Sub SendAtpsOutput(ByVal pct As Double)
+        Dim val1000 As Integer = CInt(Math.Max(0, Math.Min(100, pct)) * 10)
+        Dim discarded As String = Nothing
+        While CmdQueue.TryDequeue(discarded)
+        End While
+        CmdQueue.Enqueue("P" & val1000.ToString())
+        If COMport IsNot Nothing AndAlso COMport.IsOpen AndAlso Not serenab Then
+            Try
+                COMport.Write("P" & val1000.ToString())
+            Catch ex As Exception
+            End Try
+        End If
+    End Sub
+
+    Public Sub TriggerTare()
+        tareclick = time
+        CmdQueue.Enqueue("Z")
+        If COMport IsNot Nothing AndAlso COMport.IsOpen AndAlso Not serenab Then
+            Try
+                COMport.Write("Z")
+            Catch ex As Exception
+            End Try
+        End If
+    End Sub
+
+    Public Function CheckComConnected() As Boolean
+        Return COMport IsNot Nothing AndAlso COMport.IsOpen
+    End Function
+
+    Public Sub ReconnectComPort()
+        Try
+            If COMport IsNot Nothing AndAlso COMport.IsOpen Then COMport.Close()
+            comstr = "COM" + LTrim(Str(compt))
+            COMport.PortName = comstr
+            COMport.BaudRate = comBR
+            COMport.Open()
+            Threading.Thread.Sleep(50)
+            COMport.Write("V")
+            Threading.Thread.Sleep(50)
+            COMport.Write("M0")
+        Catch ex As Exception
+        End Try
+    End Sub
+
 End Class
 
 '-------------------------------------------------------------------------------
@@ -4718,3 +4802,4 @@ Public Class Resizer
     End Sub
 
 End Class
+
