@@ -13,6 +13,7 @@ Public Class DynoDashboard
         Private _csvDataLines As New System.Collections.Generic.List(Of String)
         Private _playbackIndex As Integer = 0
         Private _isPlaying As Boolean = False
+        Private _fanState As Boolean = False
 
         Public Sub New()
             ' This call is required by the designer.
@@ -25,21 +26,29 @@ Public Class DynoDashboard
         Private Sub DynoDashboard_Loaded(ByVal sender As Object, ByVal e As RoutedEventArgs)
             BuildRpmDial()
             BuildSpeedDial()
+            BuildChartScale()
+
+            ' Update dynamic chart grid on window resize
+            AddHandler ChartGrid.SizeChanged, AddressOf ChartGrid_SizeChanged
 
             ' Set initial value
             UpdateTelemetry(7546)
         End Sub
 
+        Private Sub ChartGrid_SizeChanged(ByVal sender As Object, ByVal e As SizeChangedEventArgs)
+            BuildChartScale()
+        End Sub
+
         ''' <summary>
-        ''' Melukis senggatan dan nombor untuk tolok RPM (0 hingga 15)
+        ''' Melukis senggatan dan nombor untuk tolok Tachometer RPM Utama (0 hingga 15,000 RPM)
         ''' </summary>
         Private Sub BuildRpmDial()
             CanvasRpmDial.Children.Clear()
 
-            Dim cx As Double = 175
-            Dim cy As Double = 175
-            Dim rTicks As Double = 148
-            Dim rNums As Double = 118
+            Dim cx As Double = 165
+            Dim cy As Double = 165
+            Dim rTicks As Double = 140
+            Dim rNums As Double = 112
             Dim startAngle As Double = 135  ' Sudut permulaan (pukul 7:30)
             Dim sweepAngle As Double = 270  ' Jumlah pusingan 270 darjah
             Dim maxRpm As Integer = 15
@@ -65,7 +74,7 @@ Public Class DynoDashboard
                     .X2 = x2,
                     .Y2 = y2,
                     .Stroke = tickColor,
-                    .StrokeThickness = If(i Mod 2 = 0, 3.5, 2.5)
+                    .StrokeThickness = If(i Mod 2 = 0, 3.5, 2.4)
                 }
                 CanvasRpmDial.Children.Add(line)
 
@@ -77,7 +86,7 @@ Public Class DynoDashboard
                         Dim subRad As Double = (subDeg * Math.PI) / 180.0
 
                         Dim sx1 As Double = cx + (rTicks * Math.Cos(subRad))
-                        Dim sy1 As Double = cy + (rTicks * Math.sin(subRad))
+                        Dim sy1 As Double = cy + (rTicks * Math.Sin(subRad))
                         Dim sx2 As Double = cx + ((rTicks - 6) * Math.Cos(subRad))
                         Dim sy2 As Double = cy + ((rTicks - 6) * Math.Sin(subRad))
 
@@ -112,19 +121,19 @@ Public Class DynoDashboard
         End Sub
 
         ''' <summary>
-        ''' Melukis senggatan dan nombor untuk tolok Speedometer (0 hingga 240 KM/H)
+        ''' Melukis tolok Speedometer Kompak (0 hingga 240 KM/H)
         ''' </summary>
         Private Sub BuildSpeedDial()
             CanvasSpeedDial.Children.Clear()
 
-            Dim cx As Double = 175
-            Dim cy As Double = 175
-            Dim rTicks As Double = 148
-            Dim rNums As Double = 118
+            Dim cx As Double = 120
+            Dim cy As Double = 120
+            Dim rTicks As Double = 100
+            Dim rNums As Double = 80
             Dim startAngle As Double = 135
             Dim sweepAngle As Double = 270
             Dim maxSpeed As Integer = 240
-            Dim stepVal As Integer = 20
+            Dim stepVal As Integer = 30 ' 0, 30, 60, 90, 120, 150, 180, 210, 240
 
             For s As Integer = 0 To maxSpeed Step stepVal
                 Dim frac As Double = s / CDbl(maxSpeed)
@@ -137,8 +146,8 @@ Public Class DynoDashboard
                 ' Garisan senggatan utama
                 Dim x1 As Double = cx + (rTicks * Math.Cos(rad))
                 Dim y1 As Double = cy + (rTicks * Math.Sin(rad))
-                Dim x2 As Double = cx + ((rTicks - 11) * Math.Cos(rad))
-                Dim y2 As Double = cy + ((rTicks - 11) * Math.Sin(rad))
+                Dim x2 As Double = cx + ((rTicks - 9) * Math.Cos(rad))
+                Dim y2 As Double = cy + ((rTicks - 9) * Math.Sin(rad))
 
                 Dim line As New Line() With {
                     .X1 = x1,
@@ -146,41 +155,43 @@ Public Class DynoDashboard
                     .X2 = x2,
                     .Y2 = y2,
                     .Stroke = tickColor,
-                    .StrokeThickness = 3.2
+                    .StrokeThickness = 2.8
                 }
                 CanvasSpeedDial.Children.Add(line)
 
-                ' Senggatan kecil
+                ' Senggatan kecil (10 & 20 KM/H antara senggatan utama)
                 If s < maxSpeed Then
-                    Dim subFrac As Double = (s + 10) / CDbl(maxSpeed)
-                    Dim subDeg As Double = startAngle + (subFrac * sweepAngle)
-                    Dim subRad As Double = (subDeg * Math.PI) / 180.0
+                    For m As Integer = 1 To 2
+                        Dim subFrac As Double = (s + (m * 10)) / CDbl(maxSpeed)
+                        Dim subDeg As Double = startAngle + (subFrac * sweepAngle)
+                        Dim subRad As Double = (subDeg * Math.PI) / 180.0
 
-                    Dim sx1 As Double = cx + (rTicks * Math.Cos(subRad))
-                    Dim sy1 As Double = cy + (rTicks * Math.Sin(subRad))
-                    Dim sx2 As Double = cx + ((rTicks - 6) * Math.Cos(subRad))
-                    Dim sy2 As Double = cy + ((rTicks - 6) * Math.Sin(subRad))
+                        Dim sx1 As Double = cx + (rTicks * Math.Cos(subRad))
+                        Dim sy1 As Double = cy + (rTicks * Math.Sin(subRad))
+                        Dim sx2 As Double = cx + ((rTicks - 5) * Math.Cos(subRad))
+                        Dim sy2 As Double = cy + ((rTicks - 5) * Math.Sin(subRad))
 
-                    Dim subLine As New Line() With {
-                        .X1 = sx1,
-                        .Y1 = sy1,
-                        .X2 = sx2,
-                        .Y2 = sy2,
-                        .Stroke = If(isRedline, New SolidColorBrush(Color.FromRgb(255, 42, 42)), New SolidColorBrush(Color.FromArgb(180, 0, 240, 255))),
-                        .StrokeThickness = 1.5
-                    }
-                    CanvasSpeedDial.Children.Add(subLine)
+                        Dim subLine As New Line() With {
+                            .X1 = sx1,
+                            .Y1 = sy1,
+                            .X2 = sx2,
+                            .Y2 = sy2,
+                            .Stroke = If(isRedline, New SolidColorBrush(Color.FromRgb(255, 42, 42)), New SolidColorBrush(Color.FromArgb(180, 0, 240, 255))),
+                            .StrokeThickness = 1.2
+                        }
+                        CanvasSpeedDial.Children.Add(subLine)
+                    Next
                 End If
 
-                ' Nombor Skala (0, 20, 40 ... 240)
+                ' Nombor Skala
                 Dim nx As Double = cx + (rNums * Math.Cos(rad)) - 14
-                Dim ny As Double = cy + (rNums * Math.Sin(rad)) - 9
+                Dim ny As Double = cy + (rNums * Math.Sin(rad)) - 8
 
                 Dim txt As New TextBlock() With {
                     .Text = s.ToString(),
                     .Foreground = tickColor,
-                    .FontWeight = FontWeights.Black,
-                    .FontSize = 12,
+                    .FontWeight = FontWeights.Bold,
+                    .FontSize = 10,
                     .Width = 28,
                     .TextAlignment = TextAlignment.Center
                 }
@@ -191,26 +202,126 @@ Public Class DynoDashboard
         End Sub
 
         ''' <summary>
+        ''' Melukis grid profesional & senggatan paksi (HP kiri, Torque kanan, RPM bawah) pada kotak graf dyno
+        ''' </summary>
+        Private Sub BuildChartScale()
+            If CanvasChartScale Is Nothing Then Return
+            CanvasChartScale.Children.Clear()
+
+            Dim w As Double = If(ChartGrid.ActualWidth > 50, ChartGrid.ActualWidth, 620.0)
+            Dim h As Double = If(ChartGrid.ActualHeight > 50, ChartGrid.ActualHeight, 220.0)
+
+            Dim leftMargin As Double = 36.0
+            Dim rightMargin As Double = 36.0
+            Dim topMargin As Double = 24.0
+            Dim bottomMargin As Double = 22.0
+
+            Dim plotW As Double = w - leftMargin - rightMargin
+            Dim plotH As Double = h - topMargin - bottomMargin
+            If plotW <= 0 OrElse plotH <= 0 Then Return
+
+            Dim gridBrush As New SolidColorBrush(Color.FromRgb(14, 34, 44))
+            Dim hpBrush As New SolidColorBrush(Color.FromRgb(0, 240, 255))
+            Dim torqBrush As New SolidColorBrush(Color.FromRgb(255, 60, 60))
+            Dim rpmBrush As New SolidColorBrush(Color.FromRgb(100, 160, 180))
+
+            ' 1. Garisan grid mendatar & Skala HP / Torque (4 langkah: 0, 25%, 50%, 75%, 100%)
+            For stepIdx As Integer = 0 To 4
+                Dim frac As Double = stepIdx / 4.0
+                Dim y As Double = (h - bottomMargin) - (frac * plotH)
+
+                Dim gLine As New Line() With {
+                    .X1 = leftMargin,
+                    .Y1 = y,
+                    .X2 = w - rightMargin,
+                    .Y2 = y,
+                    .Stroke = gridBrush,
+                    .StrokeThickness = 1.0
+                }
+                CanvasChartScale.Children.Add(gLine)
+
+                ' Nilai Paksi HP (Kiri) - 0 hingga 60 HP
+                Dim valHp As Integer = CInt(frac * 60)
+                Dim txtHp As New TextBlock() With {
+                    .Text = valHp.ToString(),
+                    .Foreground = hpBrush,
+                    .FontSize = 9.5,
+                    .FontWeight = FontWeights.Bold,
+                    .Width = 30,
+                    .TextAlignment = TextAlignment.Right
+                }
+                Canvas.SetLeft(txtHp, leftMargin - 33)
+                Canvas.SetTop(txtHp, y - 7)
+                CanvasChartScale.Children.Add(txtHp)
+
+                ' Nilai Paksi Torque Nm (Kanan) - 0 hingga 50 Nm
+                Dim valTorq As Integer = CInt(frac * 50)
+                Dim txtTorq As New TextBlock() With {
+                    .Text = valTorq.ToString(),
+                    .Foreground = torqBrush,
+                    .FontSize = 9.5,
+                    .FontWeight = FontWeights.Bold,
+                    .Width = 30,
+                    .TextAlignment = TextAlignment.Left
+                }
+                Canvas.SetLeft(txtTorq, w - rightMargin + 5)
+                Canvas.SetTop(txtTorq, y - 7)
+                CanvasChartScale.Children.Add(txtTorq)
+            Next
+
+            ' 2. Garisan grid menegak & Skala RPM (2k hingga 14k RPM, selang 2,000 RPM)
+            Dim rpmSteps As Integer() = {2000, 4000, 6000, 8000, 10000, 12000, 14000}
+            For Each r As Integer In rpmSteps
+                Dim frac As Double = (r - 2000.0) / (14000.0 - 2000.0)
+                Dim x As Double = leftMargin + (frac * plotW)
+
+                Dim gLine As New Line() With {
+                    .X1 = x,
+                    .Y1 = topMargin,
+                    .X2 = x,
+                    .Y2 = h - bottomMargin,
+                    .Stroke = gridBrush,
+                    .StrokeThickness = 1.0
+                }
+                CanvasChartScale.Children.Add(gLine)
+
+                ' Label RPM di bawah
+                Dim label As String = (r \ 1000).ToString() & "k"
+                Dim txtRpm As New TextBlock() With {
+                    .Text = label,
+                    .Foreground = rpmBrush,
+                    .FontSize = 9.5,
+                    .FontWeight = FontWeights.SemiBold,
+                    .Width = 30,
+                    .TextAlignment = TextAlignment.Center
+                }
+                Canvas.SetLeft(txtRpm, x - 15)
+                Canvas.SetTop(txtRpm, h - bottomMargin + 3)
+                CanvasChartScale.Children.Add(txtRpm)
+            Next
+        End Sub
+
+        ''' <summary>
         ''' Fungsi kemas kini pusingan jarum dan nombor digital (Menggunakan kiraan sudut yang tepat)
         ''' </summary>
         Public Sub UpdateTelemetry(ByVal rpm As Double)
-            ' 1. Kira sudut pusingan Jarum RPM (0 RPM = -135 darjah, 15000 RPM = +135 darjah)
+            ' 1. Sudut jarum Tachometer (0 RPM = -135 darjah, 15000 RPM = +135 darjah)
             Dim rpmFrac As Double = Math.Min(Math.Max(rpm / 15000.0, 0.0), 1.0)
             Dim rpmAngle As Double = -135.0 + (rpmFrac * 270.0)
             RpmNeedleTransform.Angle = rpmAngle
             TxtDigitalRpm.Text = Math.Round(rpm).ToString()
 
-            ' 2. Kira kelajuan sepadan untuk Speedometer
+            ' 2. Sudut jarum Speedometer sepadan
             Dim speedKmh As Double = (rpm / 15000.0) * 215.0
             Dim speedFrac As Double = Math.Min(Math.Max(speedKmh / 240.0, 0.0), 1.0)
             Dim speedAngle As Double = -135.0 + (speedFrac * 270.0)
             SpeedNeedleTransform.Angle = speedAngle
             TxtDigitalSpeed.Text = Math.Round(speedKmh).ToString()
 
-            ' 3. Kemas kini data kotak telemetri
+            ' 3. Telemetri asas
             Dim hp As Double = (rpm / 15000.0) * 48.0
-            TxtTopHp.Text = Math.Round(hp).ToString()
-            TxtTorq.Text = Math.Round(30.0 + (Math.Sin(rpm / 2000.0) * 10.0)).ToString()
+            TxtTopHp.Text = Math.Round(hp, 1).ToString("F1")
+            TxtTorq.Text = Math.Round(30.0 + (Math.Sin(rpm / 2000.0) * 10.0), 1).ToString("F1")
             TxtTps.Text = Math.Round((rpm / 15000.0) * 100.0).ToString()
             TxtTemp.Text = Math.Round(38.0 + ((rpm / 15000.0) * 15.0)).ToString()
         End Sub
@@ -232,6 +343,29 @@ Public Class DynoDashboard
         Private Sub BtnRpmPlus_Click(ByVal sender As Object, ByVal e As RoutedEventArgs)
             _targetRpm = Math.Min(15000, _targetRpm + 100)
             TxtTargetRpm.Text = _targetRpm.ToString()
+        End Sub
+
+        ' Quick TARE button
+        Private Sub BtnTare_Click(ByVal sender As Object, ByVal e As RoutedEventArgs) Handles BtnTare.Click
+            TxtTorq.Text = "0.0"
+            TxtTopHp.Text = "0.0"
+            TxtLoad.Text = "0"
+            BtnTare.Content = "TARED ✓"
+            Dim t As New Threading.Timer(Sub()
+                                             Dispatcher.Invoke(Sub() BtnTare.Content = "TARE ⚖")
+                                         End Sub, Nothing, 1200, Threading.Timeout.Infinite)
+        End Sub
+
+        ' Fan Toggle Button
+        Private Sub BtnFan_Click(ByVal sender As Object, ByVal e As RoutedEventArgs) Handles BtnFan.Click
+            _fanState = Not _fanState
+            If _fanState Then
+                BtnFan.Content = "FAN: ON"
+                BtnFan.Background = New SolidColorBrush(Color.FromRgb(0, 80, 40))
+            Else
+                BtnFan.Content = "FAN 🌀"
+                BtnFan.Background = New SolidColorBrush(Color.FromRgb(0, 31, 14))
+            End If
         End Sub
 
         ''' <summary>
@@ -265,15 +399,36 @@ Public Class DynoDashboard
             Double.TryParse(TxtMaxNm.Text, curMaxNm)
             If torq > curMaxNm Then TxtMaxNm.Text = Math.Round(torq, 1).ToString("F1")
 
-            ' Sensors
+            ' Aux Sensors
             If tps > 0 Then TxtTps.Text = Math.Round(tps).ToString()
             If temp > 0 Then TxtTemp.Text = Math.Round(temp).ToString()
-            If afr1 > 0 AndAlso TxtAfr1 IsNot Nothing Then TxtAfr1.Text = Math.Round(afr1, 1).ToString("F1")
-            If afr2 > 0 AndAlso TxtAfr2 IsNot Nothing Then TxtAfr2.Text = Math.Round(afr2, 1).ToString("F1")
+
+            ' Dynamic AFR Warning
+            If afr1 > 0 AndAlso TxtAfr1 IsNot Nothing Then
+                TxtAfr1.Text = Math.Round(afr1, 1).ToString("F1")
+                If afr1 > 13.5 Then
+                    TxtAfr1.Foreground = New SolidColorBrush(Color.FromRgb(255, 40, 40)) ' Lean warning!
+                ElseIf afr1 >= 12.2 AndAlso afr1 <= 13.2 Then
+                    TxtAfr1.Foreground = New SolidColorBrush(Color.FromRgb(0, 255, 136)) ' Safe power green
+                Else
+                    TxtAfr1.Foreground = New SolidColorBrush(Color.FromRgb(0, 240, 255)) ' Rich cyan
+                End If
+            End If
+
+            If afr2 > 0 AndAlso TxtAfr2 IsNot Nothing Then
+                TxtAfr2.Text = Math.Round(afr2, 1).ToString("F1")
+                If afr2 > 13.5 Then
+                    TxtAfr2.Foreground = New SolidColorBrush(Color.FromRgb(255, 40, 40))
+                ElseIf afr2 >= 12.2 AndAlso afr2 <= 13.2 Then
+                    TxtAfr2.Foreground = New SolidColorBrush(Color.FromRgb(0, 255, 136))
+                Else
+                    TxtAfr2.Foreground = New SolidColorBrush(Color.FromRgb(0, 240, 255))
+                End If
+            End If
         End Sub
 
         ''' <summary>
-        ''' Butang RUN FILE: Memilih fail run CSV dan memainkan simulasi tarikan Dyno secara langsung (Playback Replay)
+        ''' Butang RUN FILE / RUN PULL: Memilih fail run CSV dan memainkan simulasi tarikan Dyno secara langsung (Playback Replay)
         ''' </summary>
         Private Sub BtnRunFile_Click(ByVal sender As Object, ByVal e As RoutedEventArgs)
             If _isPlaying Then
@@ -339,7 +494,7 @@ Public Class DynoDashboard
 
                 _playbackIndex = 0
                 _isPlaying = True
-                BtnRunFile.Content = "STOP"
+                BtnRunFile.Content = "⏹ STOP"
 
                 If _playbackTimer Is Nothing Then
                     _playbackTimer = New System.Windows.Threading.DispatcherTimer()
@@ -358,7 +513,7 @@ Public Class DynoDashboard
                 _playbackTimer.Stop()
             End If
             _isPlaying = False
-            BtnRunFile.Content = "RUN FILE"
+            BtnRunFile.Content = "▶ RUN PULL"
         End Sub
 
         Private Sub PlaybackTimer_Tick(ByVal sender As Object, ByVal e As EventArgs)
@@ -383,7 +538,6 @@ Public Class DynoDashboard
                 Dim afr1 As Double = 12.8
                 Dim afr2 As Double = 12.8
 
-                ' Susunan lajur fail CSV DynoMas:
                 ' Time[0], Speed Dyno[1], Speed Engine[2], Speed Eng Calc[3], Raw Torq[4], Total Torq[5], Engine Torq[6], Pow KW[7], Pow hp[8], Load[9], AFR 1[10], AFR 2[11], TPS[12], Temp[13], Dist[14], Speed KMH[15]
                 Double.TryParse(cols(2).Trim(), System.Globalization.NumberStyles.Any, ci, rpm)
                 If rpm <= 0 AndAlso cols.Length > 1 Then
@@ -401,26 +555,37 @@ Public Class DynoDashboard
 
                 UpdateFromRealDyno(rpm, speedKmh, hp, torq, load, tps, temp, afr1, afr2)
 
-                ' Lukis titik masa nyata pada kotak graf (Live Dyno Graph Plotting)
-                Dim chartW As Double = If(ChartGrid.ActualWidth > 50, ChartGrid.ActualWidth, 420.0)
-                Dim chartH As Double = If(ChartGrid.ActualHeight > 50, ChartGrid.ActualHeight, 140.0)
+                ' Lukis titik masa nyata pada kotak graf (Expanded Dyno Chart)
+                Dim w As Double = If(ChartGrid.ActualWidth > 50, ChartGrid.ActualWidth, 620.0)
+                Dim h As Double = If(ChartGrid.ActualHeight > 50, ChartGrid.ActualHeight, 220.0)
 
+                Dim leftMargin As Double = 36.0
+                Dim rightMargin As Double = 36.0
+                Dim topMargin As Double = 24.0
+                Dim bottomMargin As Double = 22.0
+
+                Dim plotW As Double = w - leftMargin - rightMargin
+                Dim plotH As Double = h - topMargin - bottomMargin
+
+                ' X: 2,000 to 14,000 RPM
                 Dim minRpm As Double = 2000.0
                 Dim maxRpm As Double = 14000.0
                 Dim rpmNorm As Double = Math.Max(0.0, Math.Min(1.0, (rpm - minRpm) / (maxRpm - minRpm)))
-                Dim xPos As Double = 10.0 + (rpmNorm * (chartW - 20.0))
+                Dim xPos As Double = leftMargin + (rpmNorm * plotW)
 
+                ' Y HP: 0 to 60 HP
                 Dim maxChartHp As Double = 60.0
                 Dim hpNorm As Double = Math.Max(0.0, Math.Min(1.0, hp / maxChartHp))
-                Dim yHpPos As Double = (chartH - 12.0) - (hpNorm * (chartH - 24.0))
+                Dim yHpPos As Double = (h - bottomMargin) - (hpNorm * plotH)
 
+                ' Y Torque: 0 to 50 Nm
                 Dim maxChartNm As Double = 50.0
                 Dim torqNorm As Double = Math.Max(0.0, Math.Min(1.0, torq / maxChartNm))
-                Dim yTorqPos As Double = (chartH - 12.0) - (torqNorm * (chartH - 24.0))
+                Dim yTorqPos As Double = (h - bottomMargin) - (torqNorm * plotH)
 
                 PolylineHp.Points.Add(New Windows.Point(xPos, yHpPos))
                 PolylineTorque.Points.Add(New Windows.Point(xPos, yTorqPos))
             End If
         End Sub
 
-    End Class
+End Class

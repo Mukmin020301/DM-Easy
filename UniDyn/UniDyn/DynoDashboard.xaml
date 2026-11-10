@@ -2,8 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="DYNOMAS - Universal Dynamometer Interface (WPF)"
-        Width="1280" Height="720"
-        MinWidth="1024" MinHeight="600"
+        Width="1280" Height="740"
+        MinWidth="1100" MinHeight="650"
         WindowStartupLocation="CenterScreen"
         Background="#000000"
         FontFamily="Segoe UI, Arial">
@@ -15,6 +15,8 @@
         <DropShadowEffect x:Key="RedGlow" Color="#FF2A2A" BlurRadius="18" ShadowDepth="0" Opacity="0.8"/>
         <DropShadowEffect x:Key="YellowGlow" Color="#FFE500" BlurRadius="15" ShadowDepth="0" Opacity="0.9"/>
         <DropShadowEffect x:Key="WhiteTextGlow" Color="#00F0FF" BlurRadius="12" ShadowDepth="0" Opacity="0.7"/>
+        <DropShadowEffect x:Key="OrangeGlow" Color="#FFAA00" BlurRadius="15" ShadowDepth="0" Opacity="0.8"/>
+        <DropShadowEffect x:Key="GreenGlow" Color="#00FF88" BlurRadius="15" ShadowDepth="0" Opacity="0.8"/>
 
         <!-- Cyberpunk Sci-Fi Button Style -->
         <Style x:Key="SciFiButton" TargetType="Button">
@@ -23,8 +25,8 @@
             <Setter Property="BorderBrush" Value="#00F0FF"/>
             <Setter Property="BorderThickness" Value="1.5"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Padding" Value="12,5"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="10,4"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -60,8 +62,8 @@
 
         <!-- Pill Button Style -->
         <Style x:Key="PillButton" TargetType="Button" BasedOn="{StaticResource SciFiButton}">
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontSize" Value="10.5"/>
+            <Setter Property="Padding" Value="8,3"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -81,19 +83,46 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Dedicated Tare Orange Button Style -->
+        <Style x:Key="TareButton" TargetType="Button" BasedOn="{StaticResource SciFiButton}">
+            <Setter Property="BorderBrush" Value="#FFAA00"/>
+            <Setter Property="Foreground" Value="#FFAA00"/>
+            <Setter Property="Background" Value="#1E1300"/>
+            <Setter Property="FontWeight" Value="Black"/>
+            <Setter Property="Effect" Value="{StaticResource OrangeGlow}"/>
+        </Style>
+
+        <!-- Dedicated Fan Green Button Style -->
+        <Style x:Key="FanGreenButton" TargetType="Button" BasedOn="{StaticResource SciFiButton}">
+            <Setter Property="BorderBrush" Value="#00FF88"/>
+            <Setter Property="Foreground" Value="#00FF88"/>
+            <Setter Property="Background" Value="#001F0E"/>
+            <Setter Property="FontWeight" Value="Black"/>
+            <Setter Property="Effect" Value="{StaticResource GreenGlow}"/>
+        </Style>
+
+        <!-- Dedicated Run Pull Button Style -->
+        <Style x:Key="RunPullButton" TargetType="Button" BasedOn="{StaticResource SciFiButton}">
+            <Setter Property="BorderBrush" Value="#00F0FF"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="Background" Value="#002D3D"/>
+            <Setter Property="FontWeight" Value="Black"/>
+            <Setter Property="Effect" Value="{StaticResource CyanSoftGlow}"/>
+        </Style>
     </Window.Resources>
 
     <!-- Main Outer Grid -->
-    <Grid Margin="12">
+    <Grid Margin="12,8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/> <!-- Top Bar -->
-            <RowDefinition Height="*"/>    <!-- Center Dials & Graph -->
+            <RowDefinition Height="*"/>    <!-- Center Dials & Large Graph -->
             <RowDefinition Height="Auto"/> <!-- Bottom Deck -->
             <RowDefinition Height="Auto"/> <!-- Test Slider -->
         </Grid.RowDefinitions>
 
-        <!-- TOP BAR -->
-        <Grid Grid.Row="0" Margin="0,0,0,10">
+        <!-- ================= TOP BAR ================= -->
+        <Grid Grid.Row="0" Margin="0,0,0,8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -103,13 +132,13 @@
             </Grid.ColumnDefinitions>
 
             <!-- Setting Button -->
-            <Button Grid.Column="0" Content="SETTING" Style="{StaticResource SciFiButton}" Width="90"/>
+            <Button Grid.Column="0" Content="SETTING" Style="{StaticResource SciFiButton}" Width="90" Height="32"/>
 
             <!-- Top ENG HP Pill -->
             <StackPanel Grid.Column="1" Margin="25,0,0,0" HorizontalAlignment="Center">
                 <TextBlock Text="ENG HP" Foreground="#FF3B3B" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"/>
-                <Border BorderBrush="#FF3B3B" BorderThickness="1.5" CornerRadius="5" Background="#150808" Padding="12,2" Margin="0,2,0,0">
-                    <TextBlock x:Name="TxtTopHp" Text="35" Foreground="#FFFFFF" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center"/>
+                <Border BorderBrush="#FF3B3B" BorderThickness="1.5" CornerRadius="5" Background="#150808" Padding="14,2" Margin="0,2,0,0">
+                    <TextBlock x:Name="TxtTopHp" Text="35" Foreground="#FFFFFF" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center"/>
                 </Border>
             </StackPanel>
 
@@ -117,36 +146,36 @@
             <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock Text="KZR" Foreground="#00F0FF" FontWeight="Black" FontSize="13"  HorizontalAlignment="Center" Effect="{StaticResource CyanSoftGlow}"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,-2,0,0">
-                    <TextBlock Text="DYNO" Foreground="#FF2222" FontWeight="Black" FontStyle="Italic" FontSize="26"  Effect="{StaticResource RedGlow}"/>
-                    <TextBlock Text="MAS" Foreground="#FFFFFF" FontWeight="Black" FontStyle="Italic" FontSize="26" />
+                    <TextBlock Text="DYNO" Foreground="#FF2222" FontWeight="Black" FontStyle="Italic" FontSize="26" Effect="{StaticResource RedGlow}"/>
+                    <TextBlock Text="MAS" Foreground="#FFFFFF" FontWeight="Black" FontStyle="Italic" FontSize="26"/>
                 </StackPanel>
-                <TextBlock Text="DYNO TUNING MACHINE" Foreground="#FF2222" FontWeight="Bold" FontSize="8.5"  HorizontalAlignment="Center"/>
+                <TextBlock Text="DYNO TUNING MACHINE" Foreground="#FF2222" FontWeight="Bold" FontSize="8.5" HorizontalAlignment="Center"/>
             </StackPanel>
 
             <!-- Top RPM DYNO Pill -->
             <StackPanel Grid.Column="3" Margin="0,0,25,0" HorizontalAlignment="Center">
                 <TextBlock Text="RPM DYNO" Foreground="#FF3B3B" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"/>
-                <Border BorderBrush="#FF3B3B" BorderThickness="1.5" CornerRadius="5" Background="#150808" Padding="12,2" Margin="0,2,0,0">
-                    <TextBlock x:Name="TxtTopRpmDyno" Text="35" Foreground="#FFFFFF" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center"/>
+                <Border BorderBrush="#FF3B3B" BorderThickness="1.5" CornerRadius="5" Background="#150808" Padding="14,2" Margin="0,2,0,0">
+                    <TextBlock x:Name="TxtTopRpmDyno" Text="35" Foreground="#FFFFFF" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center"/>
                 </Border>
             </StackPanel>
 
             <!-- On-Line Button -->
-            <Button Grid.Column="4" Content="ON-LINE" Style="{StaticResource ActiveCyanButton}" Width="90"/>
+            <Button Grid.Column="4" Content="ON-LINE" Style="{StaticResource ActiveCyanButton}" Width="90" Height="32"/>
         </Grid>
 
-        <!-- CENTER AREA: GAUGE LEFT, LIVE GRAPH, GAUGE RIGHT -->
+        <!-- ================= CENTER MAIN AREA (TACHO LEFT | EXPANDED GRAPH CENTER | SPEEDO RIGHT) ================= -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="380"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="380"/>
+                <ColumnDefinition Width="340"/> <!-- Left: Prominent RPM Tachometer -->
+                <ColumnDefinition Width="*"/>   <!-- Center: EXPANDED Dyno Power Curve Chart -->
+                <ColumnDefinition Width="270"/> <!-- Right: Compact Speedometer & Aux Sensors -->
             </Grid.ColumnDefinitions>
 
-            <!-- ================= LEFT GAUGE (ENGINE RPM) ================= -->
-            <Grid Grid.Column="0" Width="360" Height="360" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <!-- ================= LEFT GAUGE (ENGINE RPM TACHOMETER) ================= -->
+            <Grid Grid.Column="0" Width="330" Height="330" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <!-- Outer Cyan Glowing Ring -->
-                <Ellipse Width="350" Height="350" Stroke="#00F0FF" StrokeThickness="7" Effect="{StaticResource CyanGlow}">
+                <Ellipse Width="326" Height="326" Stroke="#00F0FF" StrokeThickness="6.5" Effect="{StaticResource CyanGlow}">
                     <Ellipse.Fill>
                         <RadialGradientBrush>
                             <GradientStop Color="#001520" Offset="1"/>
@@ -157,24 +186,23 @@
                 </Ellipse>
 
                 <!-- Metallic Chamfer -->
-                <Ellipse Width="290" Height="290" Stroke="#2D3740" StrokeThickness="4"/>
+                <Ellipse Width="270" Height="270" Stroke="#2D3740" StrokeThickness="3.5"/>
 
                 <!-- Canvas for Dial Ticks and Numbers -->
-                <Canvas x:Name="CanvasRpmDial" Width="350" Height="350"/>
+                <Canvas x:Name="CanvasRpmDial" Width="330" Height="330"/>
 
                 <!-- Needle (WPF Vector Path with RotateTransform) -->
-                <Canvas Width="350" Height="350">
-                    <Path Data="M 173,175 L 174,32 L 176,32 L 177,175 Z" Fill="#FFE500" Effect="{StaticResource YellowGlow}">
+                <Canvas Width="330" Height="330">
+                    <Path Data="M 163,165 L 164,30 L 166,30 L 167,165 Z" Fill="#FFE500" Effect="{StaticResource YellowGlow}">
                         <Path.RenderTransform>
-                            <!-- Needle rotation centered at 175, 175 -->
-                            <RotateTransform x:Name="RpmNeedleTransform" Angle="0" CenterX="175" CenterY="175"/>
+                            <RotateTransform x:Name="RpmNeedleTransform" Angle="0" CenterX="165" CenterY="165"/>
                         </Path.RenderTransform>
                     </Path>
                 </Canvas>
 
-                <!-- Center Carbon Fiber Hub (Layered ON TOP to cover needle base) -->
-                <Grid Width="210" Height="210" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Ellipse Width="210" Height="210" Stroke="#00F0FF" StrokeThickness="3">
+                <!-- Center Carbon Fiber Hub (Layered ON TOP) -->
+                <Grid Width="195" Height="195" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Ellipse Width="195" Height="195" Stroke="#00F0FF" StrokeThickness="3">
                         <Ellipse.Fill>
                             <RadialGradientBrush>
                                 <GradientStop Color="#1A1A1A" Offset="0"/>
@@ -184,20 +212,27 @@
                         </Ellipse.Fill>
                     </Ellipse>
 
-                    <!-- Inner Text -->
+                    <!-- Inner Digital Readout -->
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock Text="DYNOMAS" Foreground="#FF2222" FontWeight="Black" FontSize="11" HorizontalAlignment="Center"  Effect="{StaticResource RedGlow}"/>
-                        <TextBlock x:Name="TxtDigitalRpm" Text="7546" Foreground="#FFFFFF" FontWeight="Black" FontSize="40" HorizontalAlignment="Center" Margin="0,2" Effect="{StaticResource WhiteTextGlow}"/>
-                        <TextBlock Text="ENGINE" Foreground="#00F0FF" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" />
-                        <TextBlock Text="- RPM -" Foreground="#70DFFF" FontWeight="SemiBold" FontSize="9.5" HorizontalAlignment="Center" />
+                        <TextBlock Text="DYNOMAS" Foreground="#FF2222" FontWeight="Black" FontSize="11" HorizontalAlignment="Center" Effect="{StaticResource RedGlow}"/>
+                        <TextBlock x:Name="TxtDigitalRpm" Text="7546" Foreground="#FFFFFF" FontWeight="Black" FontSize="42" HorizontalAlignment="Center" Margin="0,1" Effect="{StaticResource WhiteTextGlow}"/>
+                        <TextBlock Text="ENGINE" Foreground="#00F0FF" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center"/>
+                        <TextBlock Text="- RPM -" Foreground="#70DFFF" FontWeight="SemiBold" FontSize="9.5" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Grid>
             </Grid>
 
-            <!-- ================= CENTER SECTION: TELEMETRY & GRAPH ================= -->
-            <StackPanel Grid.Column="1" Margin="10,0" VerticalAlignment="Center">
-                <!-- Mini Telemetry: TORQUE, MAX HP, MAX NM, LOAD -->
-                <Grid Margin="0,0,0,6">
+            <!-- ================= CENTER SECTION: EXPANDED DYNO POWER CHART ================= -->
+            <Grid Grid.Column="1" Margin="8,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/> <!-- Mini Telemetry: Torque, Max HP, Max Nm, Load -->
+                    <RowDefinition Height="Auto"/> <!-- AFR 1 & AFR 2 -->
+                    <RowDefinition Height="*"/>    <!-- Dominant Dyno Curve Chart -->
+                    <RowDefinition Height="Auto"/> <!-- Shop Name Banner -->
+                </Grid.RowDefinitions>
+
+                <!-- 1. Mini Telemetry Row: TORQUE, MAX HP, MAX NM, LOAD -->
+                <Grid Grid.Row="0" Margin="0,0,0,4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
@@ -205,44 +240,44 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Border Grid.Column="0" BorderBrush="#FF3B3B" BorderThickness="1.2" CornerRadius="5" Background="#120606" Padding="4" Margin="2">
+                    <Border Grid.Column="0" BorderBrush="#FF3B3B" BorderThickness="1.2" CornerRadius="5" Background="#120606" Padding="6,3" Margin="2">
                         <StackPanel HorizontalAlignment="Center">
-                            <TextBlock Text="ENG TORQ" Foreground="#FF3B3B" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="TxtTorq" Text="35" Foreground="#FFFFFF" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center"/>
+                            <TextBlock Text="ENG TORQ" Foreground="#FF3B3B" FontWeight="Bold" FontSize="10.5" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtTorq" Text="35" Foreground="#FFFFFF" FontWeight="Black" FontSize="17" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Border>
 
-                    <Border Grid.Column="1" BorderBrush="#FF3B3B" BorderThickness="1.2" CornerRadius="5" Background="#120606" Padding="4" Margin="2">
+                    <Border Grid.Column="1" BorderBrush="#FF3B3B" BorderThickness="1.2" CornerRadius="5" Background="#120606" Padding="6,3" Margin="2">
                         <StackPanel HorizontalAlignment="Center">
-                            <TextBlock Text="Hp MAX" Foreground="#FF3B3B" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="TxtMaxHp" Text="48" Foreground="#FFFFFF" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Hp MAX" Foreground="#FF3B3B" FontWeight="Bold" FontSize="10.5" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtMaxHp" Text="48" Foreground="#FFFFFF" FontWeight="Black" FontSize="17" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Border>
 
-                    <Border Grid.Column="2" BorderBrush="#FF3B3B" BorderThickness="1.2" CornerRadius="5" Background="#120606" Padding="4" Margin="2">
+                    <Border Grid.Column="2" BorderBrush="#FF3B3B" BorderThickness="1.2" CornerRadius="5" Background="#120606" Padding="6,3" Margin="2">
                         <StackPanel HorizontalAlignment="Center">
-                            <TextBlock Text="Nm MAX" Foreground="#FF3B3B" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="TxtMaxNm" Text="39" Foreground="#FFFFFF" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Nm MAX" Foreground="#FF3B3B" FontWeight="Bold" FontSize="10.5" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtMaxNm" Text="39" Foreground="#FFFFFF" FontWeight="Black" FontSize="17" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Border>
 
-                    <Border Grid.Column="3" BorderBrush="#FF3B3B" BorderThickness="1.2" CornerRadius="5" Background="#120606" Padding="4" Margin="2">
+                    <Border Grid.Column="3" BorderBrush="#FF3B3B" BorderThickness="1.2" CornerRadius="5" Background="#120606" Padding="6,3" Margin="2">
                         <StackPanel HorizontalAlignment="Center">
-                            <TextBlock Text="LOAD" Foreground="#FF3B3B" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="TxtLoad" Text="10" Foreground="#FFFFFF" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center"/>
+                            <TextBlock Text="LOAD" Foreground="#FF3B3B" FontWeight="Bold" FontSize="10.5" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtLoad" Text="10" Foreground="#FFFFFF" FontWeight="Black" FontSize="17" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Border>
                 </Grid>
 
-                <!-- AFR Row -->
-                <Grid Margin="0,0,0,6">
+                <!-- 2. AFR Row (Air-Fuel Ratio with Safety Glow) -->
+                <Grid Grid.Row="1" Margin="0,0,0,4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- AFR 1 -->
-                    <Border Grid.Column="0" BorderBrush="#00F0FF" BorderThickness="1" CornerRadius="5" Background="#05121A" Padding="6,3" Margin="2">
+                    <Border Grid.Column="0" BorderBrush="#00F0FF" BorderThickness="1" CornerRadius="5" Background="#05121A" Padding="8,3" Margin="2">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -250,23 +285,23 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="AFR 1" Foreground="#FFFFFF" FontWeight="Bold" FontSize="11" VerticalAlignment="Center"/>
-                            <Border Grid.Column="1" Margin="8,0" Height="8" CornerRadius="4" Background="#111" BorderBrush="#333" BorderThickness="1">
-                                <Border HorizontalAlignment="Left" Width="100" CornerRadius="3">
+                            <Border Grid.Column="1" Margin="10,0" Height="8" CornerRadius="4" Background="#111" BorderBrush="#333" BorderThickness="1">
+                                <Border HorizontalAlignment="Left" Width="120" CornerRadius="3">
                                     <Border.Background>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                            <GradientStop Color="#FFD600" Offset="0"/>
-                                            <GradientStop Color="#FF6600" Offset="0.6"/>
-                                            <GradientStop Color="#FF1744" Offset="1"/>
+                                            <GradientStop Color="#00F0FF" Offset="0"/>
+                                            <GradientStop Color="#00FF88" Offset="0.5"/>
+                                            <GradientStop Color="#FF3B3B" Offset="1"/>
                                         </LinearGradientBrush>
                                     </Border.Background>
                                 </Border>
                             </Border>
-                            <TextBlock x:Name="TxtAfr1" Grid.Column="2" Text="12.8" Foreground="#FFFFFF" FontWeight="Bold" FontSize="12" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="TxtAfr1" Grid.Column="2" Text="12.8" Foreground="#00FF88" FontWeight="Black" FontSize="13" VerticalAlignment="Center"/>
                         </Grid>
                     </Border>
 
                     <!-- AFR 2 -->
-                    <Border Grid.Column="1" BorderBrush="#00F0FF" BorderThickness="1" CornerRadius="5" Background="#05121A" Padding="6,3" Margin="2">
+                    <Border Grid.Column="1" BorderBrush="#00F0FF" BorderThickness="1" CornerRadius="5" Background="#05121A" Padding="8,3" Margin="2">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -274,126 +309,159 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="AFR 2" Foreground="#FFFFFF" FontWeight="Bold" FontSize="11" VerticalAlignment="Center"/>
-                            <Border Grid.Column="1" Margin="8,0" Height="8" CornerRadius="4" Background="#111" BorderBrush="#333" BorderThickness="1">
-                                <Border HorizontalAlignment="Left" Width="100" CornerRadius="3">
+                            <Border Grid.Column="1" Margin="10,0" Height="8" CornerRadius="4" Background="#111" BorderBrush="#333" BorderThickness="1">
+                                <Border HorizontalAlignment="Left" Width="120" CornerRadius="3">
                                     <Border.Background>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                            <GradientStop Color="#FFD600" Offset="0"/>
-                                            <GradientStop Color="#FF6600" Offset="0.6"/>
-                                            <GradientStop Color="#FF1744" Offset="1"/>
+                                            <GradientStop Color="#00F0FF" Offset="0"/>
+                                            <GradientStop Color="#00FF88" Offset="0.5"/>
+                                            <GradientStop Color="#FF3B3B" Offset="1"/>
                                         </LinearGradientBrush>
                                     </Border.Background>
                                 </Border>
                             </Border>
-                            <TextBlock x:Name="TxtAfr2" Grid.Column="2" Text="12.8" Foreground="#FFFFFF" FontWeight="Bold" FontSize="12" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="TxtAfr2" Grid.Column="2" Text="12.8" Foreground="#00FF88" FontWeight="Black" FontSize="13" VerticalAlignment="Center"/>
                         </Grid>
                     </Border>
                 </Grid>
 
-                <!-- Sensor Telemetry (Yellow Borders) -->
-                <UniformGrid Columns="5" Margin="0,0,0,6">
-                    <Border BorderBrush="#FFD600" BorderThickness="1" CornerRadius="4" Background="#0F0D04" Padding="3" Margin="2">
-                        <StackPanel HorizontalAlignment="Center">
-                            <TextBlock Text="Tps %" Foreground="#FFD600" FontWeight="Bold" FontSize="9.5" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="TxtTps" Text="70" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
-                    <Border BorderBrush="#FFD600" BorderThickness="1" CornerRadius="4" Background="#0F0D04" Padding="3" Margin="2">
-                        <StackPanel HorizontalAlignment="Center">
-                            <TextBlock Text="Temp c" Foreground="#FFD600" FontWeight="Bold" FontSize="9.5" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="TxtTemp" Text="39" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
-                    <Border BorderBrush="#FFD600" BorderThickness="1" CornerRadius="4" Background="#0F0D04" Padding="3" Margin="2">
-                        <StackPanel HorizontalAlignment="Center">
-                            <TextBlock Text="Iat c" Foreground="#FFD600" FontWeight="Bold" FontSize="9.5" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="TxtIat" Text="48" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
-                    <Border BorderBrush="#FFD600" BorderThickness="1" CornerRadius="4" Background="#0F0D04" Padding="3" Margin="2">
-                        <StackPanel HorizontalAlignment="Center">
-                            <TextBlock Text="Map kpa" Foreground="#FFD600" FontWeight="Bold" FontSize="9.5" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="TxtMap" Text="57" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
-                    <Border BorderBrush="#FFD600" BorderThickness="1" CornerRadius="4" Background="#0F0D04" Padding="3" Margin="2">
-                        <StackPanel HorizontalAlignment="Center">
-                            <TextBlock Text="Volt V" Foreground="#FFD600" FontWeight="Bold" FontSize="9.5" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="TxtVolt" Text="13.4" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
-                </UniformGrid>
-
-                <!-- Dyno Power Curve Chart Container -->
-                <Border BorderBrush="#00F0FF" BorderThickness="1.5" CornerRadius="6" Background="#03080E" Height="140" Margin="0,2">
+                <!-- 3. EXPANDED DYNO POWER CURVE CHART (Height 230px, with Axis Scale Numbers) -->
+                <Border Grid.Row="2" BorderBrush="#00F0FF" BorderThickness="1.5" CornerRadius="8" Background="#03080E" MinHeight="220" Margin="0,2">
                     <Grid x:Name="ChartGrid" ClipToBounds="True">
-                        <!-- Grid Lines -->
-                        <Path Stroke="#0D2028" StrokeThickness="1" Data="M 0,28 L 500,28 M 0,56 L 500,56 M 0,84 L 500,84 M 0,112 L 500,112 M 70,0 L 70,140 M 140,0 L 140,140 M 210,0 L 210,140 M 280,0 L 280,140 M 350,0 L 350,140 M 420,0 L 420,140"/>
+                        <!-- Chart Legend & Title -->
+                        <Grid VerticalAlignment="Top" Margin="10,6,10,0" Panel.ZIndex="5">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                <Border Width="12" Height="3" Background="#00F0FF" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <TextBlock Text="HORSEPOWER (HP)" Foreground="#00F0FF" FontWeight="Bold" FontSize="10.5" VerticalAlignment="Center"/>
+                                <Border Width="12" Height="3" Background="#FF3B3B" VerticalAlignment="Center" Margin="16,0,4,0"/>
+                                <TextBlock Text="TORQUE (Nm)" Foreground="#FF3B3B" FontWeight="Bold" FontSize="10.5" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="RPM SPAN: 2,000 - 14,000" Foreground="#3A6677" FontWeight="SemiBold" FontSize="9.5" HorizontalAlignment="Right"/>
+                        </Grid>
+
+                        <!-- Canvas for Grid Lines & Axis Scales -->
+                        <Canvas x:Name="CanvasChartScale" Panel.ZIndex="1"/>
+
                         <!-- Cyan Curve: Horsepower -->
-                        <Polyline x:Name="PolylineHp" Stroke="#00F0FF" StrokeThickness="2.5" Effect="{StaticResource CyanSoftGlow}"/>
+                        <Polyline x:Name="PolylineHp" Stroke="#00F0FF" StrokeThickness="2.8" Effect="{StaticResource CyanSoftGlow}" Panel.ZIndex="3"/>
                         <!-- Red Curve: Torque -->
-                        <Polyline x:Name="PolylineTorque" Stroke="#FF2A2A" StrokeThickness="2.5" Effect="{StaticResource RedGlow}"/>
+                        <Polyline x:Name="PolylineTorque" Stroke="#FF2A2A" StrokeThickness="2.8" Effect="{StaticResource RedGlow}" Panel.ZIndex="3"/>
                     </Grid>
                 </Border>
 
-                <!-- Shop Branding Banner -->
-                <TextBlock Text="YOUR NAME HERE" Foreground="#FFFFFF" FontWeight="Black" FontSize="16"  HorizontalAlignment="Center" Margin="0,4,0,0"/>
-            </StackPanel>
+                <!-- 4. Shop Branding Banner -->
+                <TextBlock Grid.Row="3" Text="YOUR NAME HERE" Foreground="#FFFFFF" FontWeight="Black" FontSize="15" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+            </Grid>
 
-            <!-- ================= RIGHT GAUGE (SPEED KM/H) ================= -->
-            <Grid Grid.Column="2" Width="360" Height="360" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <!-- Outer Cyan Glowing Ring -->
-                <Ellipse Width="350" Height="350" Stroke="#00F0FF" StrokeThickness="7" Effect="{StaticResource CyanGlow}">
-                    <Ellipse.Fill>
-                        <RadialGradientBrush>
-                            <GradientStop Color="#001520" Offset="1"/>
-                            <GradientStop Color="#020406" Offset="0.5"/>
-                            <GradientStop Color="#000000" Offset="0"/>
-                        </RadialGradientBrush>
-                    </Ellipse.Fill>
-                </Ellipse>
-
-                <!-- Metallic Chamfer -->
-                <Ellipse Width="290" Height="290" Stroke="#2D3740" StrokeThickness="4"/>
-
-                <!-- Canvas for Dial Ticks and Numbers -->
-                <Canvas x:Name="CanvasSpeedDial" Width="350" Height="350"/>
-
-                <!-- Needle (WPF Vector Path with RotateTransform) -->
-                <Canvas Width="350" Height="350">
-                    <Path Data="M 173,175 L 174,32 L 176,32 L 177,175 Z" Fill="#FFE500" Effect="{StaticResource YellowGlow}">
-                        <Path.RenderTransform>
-                            <!-- Needle rotation centered at 175, 175 -->
-                            <RotateTransform x:Name="SpeedNeedleTransform" Angle="0" CenterX="175" CenterY="175"/>
-                        </Path.RenderTransform>
-                    </Path>
-                </Canvas>
-
-                <!-- Center Carbon Fiber Hub (Layered ON TOP) -->
-                <Grid Width="210" Height="210" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Ellipse Width="210" Height="210" Stroke="#00F0FF" StrokeThickness="3">
+            <!-- ================= RIGHT COLUMN: COMPACT SPEEDOMETER & AUX SENSORS ================= -->
+            <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Width="260">
+                <!-- Compact Speedometer Dial (240x240) -->
+                <Grid Width="240" Height="240" HorizontalAlignment="Center">
+                    <!-- Outer Cyan Glowing Ring -->
+                    <Ellipse Width="236" Height="236" Stroke="#00F0FF" StrokeThickness="5" Effect="{StaticResource CyanGlow}">
                         <Ellipse.Fill>
                             <RadialGradientBrush>
-                                <GradientStop Color="#1A1A1A" Offset="0"/>
-                                <GradientStop Color="#0B0B0B" Offset="0.8"/>
-                                <GradientStop Color="#000000" Offset="1"/>
+                                <GradientStop Color="#001520" Offset="1"/>
+                                <GradientStop Color="#020406" Offset="0.5"/>
+                                <GradientStop Color="#000000" Offset="0"/>
                             </RadialGradientBrush>
                         </Ellipse.Fill>
                     </Ellipse>
 
-                    <!-- Inner Text -->
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock Text="DYNOMAS" Foreground="#FF2222" FontWeight="Black" FontSize="11" HorizontalAlignment="Center"  Effect="{StaticResource RedGlow}"/>
-                        <TextBlock x:Name="TxtDigitalSpeed" Text="107" Foreground="#FFFFFF" FontWeight="Black" FontSize="40" HorizontalAlignment="Center" Margin="0,2" Effect="{StaticResource WhiteTextGlow}"/>
-                        <TextBlock Text="SPEED" Foreground="#00F0FF" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" />
-                        <TextBlock Text="- KM/H -" Foreground="#70DFFF" FontWeight="SemiBold" FontSize="9.5" HorizontalAlignment="Center" />
-                    </StackPanel>
+                    <!-- Metallic Chamfer -->
+                    <Ellipse Width="196" Height="196" Stroke="#2D3740" StrokeThickness="3"/>
+
+                    <!-- Canvas for Speed Dial Ticks and Numbers -->
+                    <Canvas x:Name="CanvasSpeedDial" Width="240" Height="240"/>
+
+                    <!-- Needle -->
+                    <Canvas Width="240" Height="240">
+                        <Path Data="M 118,120 L 119,25 L 121,25 L 122,120 Z" Fill="#FFE500" Effect="{StaticResource YellowGlow}">
+                            <Path.RenderTransform>
+                                <RotateTransform x:Name="SpeedNeedleTransform" Angle="0" CenterX="120" CenterY="120"/>
+                            </Path.RenderTransform>
+                        </Path>
+                    </Canvas>
+
+                    <!-- Center Carbon Fiber Hub (Layered ON TOP) -->
+                    <Grid Width="142" Height="142" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Ellipse Width="142" Height="142" Stroke="#00F0FF" StrokeThickness="2.5">
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Color="#1A1A1A" Offset="0"/>
+                                    <GradientStop Color="#0B0B0B" Offset="0.8"/>
+                                    <GradientStop Color="#000000" Offset="1"/>
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+
+                        <!-- Inner Text -->
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="DYNOMAS" Foreground="#FF2222" FontWeight="Black" FontSize="9.5" HorizontalAlignment="Center" Effect="{StaticResource RedGlow}"/>
+                            <TextBlock x:Name="TxtDigitalSpeed" Text="108" Foreground="#FFFFFF" FontWeight="Black" FontSize="34" HorizontalAlignment="Center" Margin="0,1" Effect="{StaticResource WhiteTextGlow}"/>
+                            <TextBlock Text="SPEED" Foreground="#00F0FF" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock Text="- KM/H -" Foreground="#70DFFF" FontWeight="SemiBold" FontSize="8.5" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
-            </Grid>
+
+                <!-- Sensor Telemetry (Relocated Here to Free Up Space for the Huge Chart!) -->
+                <Grid Margin="0,8,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- TPS % -->
+                    <Border Grid.Row="0" Grid.Column="0" BorderBrush="#FFD600" BorderThickness="1" CornerRadius="4" Background="#0F0D04" Padding="2,3" Margin="2">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="TPS %" Foreground="#FFD600" FontWeight="Bold" FontSize="9" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtTps" Text="50" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- TEMP °C -->
+                    <Border Grid.Row="0" Grid.Column="1" BorderBrush="#FFD600" BorderThickness="1" CornerRadius="4" Background="#0F0D04" Padding="2,3" Margin="2">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="TEMP c" Foreground="#FFD600" FontWeight="Bold" FontSize="9" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtTemp" Text="46" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- IAT °C -->
+                    <Border Grid.Row="0" Grid.Column="2" BorderBrush="#FFD600" BorderThickness="1" CornerRadius="4" Background="#0F0D04" Padding="2,3" Margin="2">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="IAT c" Foreground="#FFD600" FontWeight="Bold" FontSize="9" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtIat" Text="48" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- MAP kPa -->
+                    <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="#FFD600" BorderThickness="1" CornerRadius="4" Background="#0F0D04" Padding="4,3" Margin="2">
+                        <Grid>
+                            <TextBlock Text="MAP kpa:" Foreground="#FFD600" FontWeight="Bold" FontSize="9.5" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="6,0,0,0"/>
+                            <TextBlock x:Name="TxtMap" Text="57" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,6,0"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- VOLT V -->
+                    <Border Grid.Row="1" Grid.Column="2" BorderBrush="#FFD600" BorderThickness="1" CornerRadius="4" Background="#0F0D04" Padding="2,3" Margin="2">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="VOLT V" Foreground="#FFD600" FontWeight="Bold" FontSize="9" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtVolt" Text="13.4" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </StackPanel>
         </Grid>
 
-        <!-- BOTTOM CONTROL DECK -->
-        <Border Grid.Row="2" BorderBrush="#3300F0FF" BorderThickness="0,1,0,0" Padding="0,8,0,0" Margin="0,6,0,0">
+        <!-- ================= BOTTOM CONTROL DECK (TOUCHSCREEN-FRIENDLY) ================= -->
+        <Border Grid.Row="2" BorderBrush="#3300F0FF" BorderThickness="0,1,0,0" Padding="0,6,0,0" Margin="0,4,0,0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/> <!-- DISPLAY -->
@@ -405,73 +473,86 @@
 
                 <!-- Column 1: DISPLAY -->
                 <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                    <TextBlock Text="DISPLAY" Foreground="#FFFFFF" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,4"/>
-                    <Button Content="INERTIA" Style="{StaticResource PillButton}" Margin="0,0,0,4"/>
-                    <Button Content="LOADED" Style="{StaticResource ActiveCyanButton}" Margin="0,0,0,4"/>
+                    <TextBlock Text="DISPLAY" Foreground="#FFFFFF" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,3"/>
+                    <Button Content="INERTIA" Style="{StaticResource PillButton}" Margin="0,0,0,3"/>
+                    <Button Content="LOADED" Style="{StaticResource ActiveCyanButton}" Margin="0,0,0,3"/>
                 </StackPanel>
 
                 <!-- Column 2: AUTO -->
                 <StackPanel Grid.Column="1" Margin="0,0,8,0">
-                    <TextBlock Text="AUTO" Foreground="#FFFFFF" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,4"/>
-                    <Button Content="TUNE ASST" Style="{StaticResource ActiveCyanButton}" Margin="0,0,0,4"/>
-                    <Button Content="INSTAGRAF" Style="{StaticResource PillButton}" Margin="0,0,0,4"/>
+                    <TextBlock Text="AUTO" Foreground="#FFFFFF" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,3"/>
+                    <Button Content="TUNE ASST" Style="{StaticResource ActiveCyanButton}" Margin="0,0,0,3"/>
+                    <Button Content="INSTAGRAF" Style="{StaticResource PillButton}" Margin="0,0,0,3"/>
                     <Button Content="LOAD" Style="{StaticResource PillButton}"/>
                 </StackPanel>
 
                 <!-- Column 3: RPM -->
-                <StackPanel Grid.Column="2" Margin="0,0,12,0">
-                    <TextBlock Text="RPM" Foreground="#FFFFFF" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,4"/>
-                    <Button Content="RPM : GR" Style="{StaticResource ActiveCyanButton}" Margin="0,0,0,4"/>
-                    <Button Content="RPM : ENG" Style="{StaticResource PillButton}" Margin="0,0,0,4"/>
+                <StackPanel Grid.Column="2" Margin="0,0,10,0">
+                    <TextBlock Text="RPM" Foreground="#FFFFFF" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,3"/>
+                    <Button Content="RPM : GR" Style="{StaticResource ActiveCyanButton}" Margin="0,0,0,3"/>
+                    <Button Content="RPM : ENG" Style="{StaticResource PillButton}" Margin="0,0,0,3"/>
                     <Button Content="RPM : DYNO" Style="{StaticResource PillButton}"/>
                 </StackPanel>
 
                 <!-- Column 4: LOAD MODE & TARGET RPM -->
-                <Border Grid.Column="3" BorderBrush="#FF2222" BorderThickness="1.2" CornerRadius="8" Background="#120505" Padding="10,6" Margin="0,0,12,0">
+                <Border Grid.Column="3" BorderBrush="#FF2222" BorderThickness="1.2" CornerRadius="8" Background="#120505" Padding="10,4" Margin="0,0,10,0">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock Text="SELECT LOAD MODE" Foreground="#FFFFFF" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"  Margin="0,0,0,6"/>
+                        <TextBlock Text="SELECT LOAD MODE" Foreground="#FFFFFF" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center" Margin="0,0,0,4"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Button Content="MANUAL" Style="{StaticResource PillButton}" Margin="3,0"/>
                             <Button Content="SPEED" Style="{StaticResource ActiveCyanButton}" Margin="3,0"/>
                             <Button Content="ACELLERATION" Style="{StaticResource PillButton}" Margin="3,0"/>
                             <Button Content="2-POINT" Style="{StaticResource PillButton}" Margin="3,0"/>
                         </StackPanel>
-                        <!-- Target RPM Stepper -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
-                            <TextBlock Text="TARGET RPM" Foreground="#FFFFFF" FontWeight="Black" FontSize="14" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                            <Button x:Name="BtnRpmMinus" Content="-" Style="{StaticResource SciFiButton}" Width="28" Height="28" Padding="0" FontSize="16" Click="BtnRpmMinus_Click"/>
-                            <Border BorderBrush="#00F0FF" BorderThickness="1.5" CornerRadius="14" Background="#0C1D26" Padding="18,3" Margin="8,0">
+                        <!-- Large Touch Target RPM Stepper -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
+                            <TextBlock Text="TARGET RPM" Foreground="#FFFFFF" FontWeight="Black" FontSize="13.5" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <Button x:Name="BtnRpmMinus" Content="-" Style="{StaticResource SciFiButton}" Width="34" Height="32" Padding="0" FontSize="18" Click="BtnRpmMinus_Click"/>
+                            <Border BorderBrush="#00F0FF" BorderThickness="1.5" CornerRadius="12" Background="#0C1D26" Padding="18,2" Margin="8,0">
                                 <TextBlock x:Name="TxtTargetRpm" Text="7000" Foreground="#FFFFFF" FontWeight="Black" FontSize="18"/>
                             </Border>
-                            <Button x:Name="BtnRpmPlus" Content="+" Style="{StaticResource SciFiButton}" Width="28" Height="28" Padding="0" FontSize="16" Click="BtnRpmPlus_Click"/>
+                            <Button x:Name="BtnRpmPlus" Content="+" Style="{StaticResource SciFiButton}" Width="34" Height="32" Padding="0" FontSize="18" Click="BtnRpmPlus_Click"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
 
                 <!-- Column 5: Right Action Command Buttons -->
-                <StackPanel Grid.Column="4" Width="260">
+                <StackPanel Grid.Column="4" Width="290">
                     <Border BorderBrush="#00F0FF" BorderThickness="1" CornerRadius="4" Background="#000" Padding="6,2" Margin="0,0,0,4">
-                        <TextBlock x:Name="TxtFilePath" Text="C:\Dynomas\SampleDynoRun.CSV" Foreground="#00F0FF" FontSize="11" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock x:Name="TxtFilePath" Text="C:\Dynomas\SampleDynoRun.CSV" Foreground="#00F0FF" FontSize="10.5" TextTrimming="CharacterEllipsis"/>
                     </Border>
-                    <UniformGrid Columns="3" Rows="3">
-                        <Button x:Name="BtnRunFile" Content="RUN FILE" Style="{StaticResource SciFiButton}" Margin="2" FontSize="10" Click="BtnRunFile_Click"/>
-                        <Button Content="GRAF" Style="{StaticResource SciFiButton}" Margin="2" FontSize="10"/>
-                        <Button Content="ECU / OBD" Style="{StaticResource SciFiButton}" Margin="2" FontSize="10"/>
-                        <Button Content="RATIO" Style="{StaticResource SciFiButton}" Margin="2" FontSize="10"/>
-                        <Button Content="TARE" Style="{StaticResource SciFiButton}" Margin="2" FontSize="10"/>
-                        <Button Content="RPM-1" Style="{StaticResource SciFiButton}" Margin="2" FontSize="10"/>
-                        <Button Content="RUN: 1" Style="{StaticResource SciFiButton}" Margin="2" FontSize="10"/>
-                        <Button Content="FAN CONTROL" Style="{StaticResource SciFiButton}" Margin="2" FontSize="10" Grid.ColumnSpan="2"/>
-                    </UniformGrid>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="34"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Row 1: Primary Critical Tuner Buttons -->
+                        <Button x:Name="BtnRunFile" Grid.Row="0" Grid.Column="0" Content="▶ RUN PULL" Style="{StaticResource RunPullButton}" Margin="2" FontSize="11" Click="BtnRunFile_Click"/>
+                        <Button x:Name="BtnTare" Grid.Row="0" Grid.Column="1" Content="TARE ⚖" Style="{StaticResource TareButton}" Margin="2" FontSize="11"/>
+                        <Button x:Name="BtnFan" Grid.Row="0" Grid.Column="2" Content="FAN 🌀" Style="{StaticResource FanGreenButton}" Margin="2" FontSize="11"/>
+
+                        <!-- Row 2: Secondary Utility Buttons -->
+                        <Button Grid.Row="1" Grid.Column="0" Content="GRAF" Style="{StaticResource SciFiButton}" Margin="2" FontSize="10"/>
+                        <Button Grid.Row="1" Grid.Column="1" Content="RATIO" Style="{StaticResource SciFiButton}" Margin="2" FontSize="10"/>
+                        <Button Grid.Row="1" Grid.Column="2" Content="ECU/OBD" Style="{StaticResource SciFiButton}" Margin="2" FontSize="10"/>
+                    </Grid>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- TEST THROTTLE SLIDER (FOR SIMULATION) -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
-            <TextBlock Text="🕹️ TEST THROTTLE / SIMULATION:" Foreground="#00F0FF" FontWeight="Bold" FontSize="13" VerticalAlignment="Center" Margin="0,0,12,0"/>
-            <Slider x:Name="SliderThrottle" Width="320" Minimum="0" Maximum="15000" Value="7546" ValueChanged="SliderThrottle_ValueChanged"/>
-            <TextBlock x:Name="TxtSliderVal" Text="7546 RPM" Foreground="#00F0FF" FontWeight="Bold" FontSize="13" VerticalAlignment="Center" Margin="12,0,0,0"/>
-        </StackPanel>
+        <!-- ================= TEST THROTTLE SLIDER (DOCK AT BOTTOM) ================= -->
+        <Border Grid.Row="3" Background="#050C12" BorderBrush="#122A38" BorderThickness="1" CornerRadius="5" Padding="8,4" Margin="0,6,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="🕹️ TEST THROTTLE / SIMULATION:" Foreground="#00F0FF" FontWeight="Bold" FontSize="12" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                <Slider x:Name="SliderThrottle" Width="360" Minimum="0" Maximum="15000" Value="7546" ValueChanged="SliderThrottle_ValueChanged"/>
+                <TextBlock x:Name="TxtSliderVal" Text="7546 RPM" Foreground="#00F0FF" FontWeight="Bold" FontSize="12.5" VerticalAlignment="Center" Margin="12,0,0,0"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>
