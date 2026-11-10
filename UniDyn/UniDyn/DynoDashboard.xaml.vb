@@ -32,6 +32,14 @@ Partial Public Class DynoDashboard
 
         AddHandler ChartGrid.SizeChanged, AddressOf ChartGrid_SizeChanged
 
+        If UniDyn.Instance IsNot Nothing Then
+            If Not String.IsNullOrWhiteSpace(UniDyn.Instance.LTagline.Text) Then
+                TxtBannerTitle.Text = UniDyn.Instance.LTagline.Text
+            ElseIf Not String.IsNullOrWhiteSpace(UniDyn.Instance.Cals.Tbtit.Text) Then
+                TxtBannerTitle.Text = UniDyn.Instance.Cals.Tbtit.Text
+            End If
+        End If
+
         UpdateOnlineStatus()
         UpdateTelemetry(0)
     End Sub
@@ -46,12 +54,12 @@ Partial Public Class DynoDashboard
     Private Sub BuildRpmDial()
         CanvasRpmDial.Children.Clear()
 
-        Dim cx As Double = 165
-        Dim cy As Double = 165
-        Dim rTicks As Double = 140
-        Dim rNums As Double = 112
-        Dim startAngle As Double = 135
-        Dim sweepAngle As Double = 270
+        Dim cx As Double = 200.0
+        Dim cy As Double = 200.0
+        Dim rTicks As Double = 180.0
+        Dim rNums As Double = 148.0
+        Dim startAngle As Double = 135.0
+        Dim sweepAngle As Double = 270.0
         Dim maxRpm As Integer = 15
 
         For i As Integer = 0 To maxRpm
@@ -60,10 +68,10 @@ Partial Public Class DynoDashboard
             Dim rad As Double = (deg * Math.PI) / 180.0
 
             Dim isRedline As Boolean = (i >= 10)
-            Dim tickBrush As Brush = If(isRedline, New SolidColorBrush(Color.FromRgb(255, 42, 42)), New SolidColorBrush(Color.FromRgb(255, 255, 255)))
-            Dim numBrush As Brush = If(isRedline, New SolidColorBrush(Color.FromRgb(255, 42, 42)), New SolidColorBrush(Color.FromRgb(255, 255, 255)))
+            Dim tickBrush As Brush = If(isRedline, New SolidColorBrush(Color.FromRgb(255, 34, 34)), New SolidColorBrush(Color.FromRgb(255, 255, 255)))
+            Dim numBrush As Brush = If(isRedline, New SolidColorBrush(Color.FromRgb(255, 34, 34)), New SolidColorBrush(Color.FromRgb(255, 255, 255)))
 
-            Dim tickLen As Double = 12
+            Dim tickLen As Double = 14.0
             Dim x1 As Double = cx + ((rTicks - tickLen) * Math.Cos(rad))
             Dim y1 As Double = cy + ((rTicks - tickLen) * Math.Sin(rad))
             Dim x2 As Double = cx + (rTicks * Math.Cos(rad))
@@ -75,7 +83,7 @@ Partial Public Class DynoDashboard
                 .X2 = x2,
                 .Y2 = y2,
                 .Stroke = tickBrush,
-                .StrokeThickness = 2.5
+                .StrokeThickness = 2.8
             }
             CanvasRpmDial.Children.Add(line)
 
@@ -85,14 +93,15 @@ Partial Public Class DynoDashboard
             Dim txt As New TextBlock() With {
                 .Text = i.ToString(),
                 .Foreground = numBrush,
-                .FontSize = 13,
-                .FontWeight = FontWeights.Bold,
-                .Width = 26,
-                .Height = 22,
+                .FontSize = 15,
+                .FontWeight = FontWeights.Black,
+                .FontStyle = FontStyles.Italic,
+                .Width = 30,
+                .Height = 24,
                 .TextAlignment = TextAlignment.Center
             }
-            Canvas.SetLeft(txt, nx - 13)
-            Canvas.SetTop(txt, ny - 11)
+            Canvas.SetLeft(txt, nx - 15)
+            Canvas.SetTop(txt, ny - 12)
             CanvasRpmDial.Children.Add(txt)
 
             If i < maxRpm Then
@@ -102,8 +111,8 @@ Partial Public Class DynoDashboard
                     Dim subRad As Double = (subDeg * Math.PI) / 180.0
 
                     Dim isSubRed As Boolean = (i >= 10)
-                    Dim subBrush As Brush = If(isSubRed, New SolidColorBrush(Color.FromRgb(255, 60, 60)), New SolidColorBrush(Color.FromArgb(160, 200, 220, 230)))
-                    Dim subLen As Double = If(subTick = 2, 7, 4.5)
+                    Dim subBrush As Brush = If(isSubRed, New SolidColorBrush(Color.FromRgb(255, 60, 60)), New SolidColorBrush(Color.FromArgb(180, 0, 240, 255)))
+                    Dim subLen As Double = If(subTick = 2, 8.5, 5.0)
 
                     Dim sx1 As Double = cx + ((rTicks - subLen) * Math.Cos(subRad))
                     Dim sy1 As Double = cy + ((rTicks - subLen) * Math.Sin(subRad))
@@ -116,7 +125,7 @@ Partial Public Class DynoDashboard
                         .X2 = sx2,
                         .Y2 = sy2,
                         .Stroke = subBrush,
-                        .StrokeThickness = If(subTick = 2, 1.8, 1.0)
+                        .StrokeThickness = If(subTick = 2, 1.8, 1.2)
                     }
                     CanvasRpmDial.Children.Add(sline)
                 Next
@@ -130,14 +139,15 @@ Partial Public Class DynoDashboard
     Private Sub BuildSpeedDial()
         CanvasSpeedDial.Children.Clear()
 
-        Dim cx As Double = 120
-        Dim cy As Double = 120
-        Dim rTicks As Double = 105
-        Dim rNums As Double = 84
-        Dim startAngle As Double = 135
-        Dim sweepAngle As Double = 270
+        Dim cx As Double = 200.0
+        Dim cy As Double = 200.0
+        Dim rTicks As Double = 180.0
+        Dim rNums As Double = 148.0
+        Dim startAngle As Double = 135.0
+        Dim sweepAngle As Double = 270.0
 
-        Dim speeds As Integer() = {0, 30, 60, 90, 120, 150, 180, 210, 240}
+        ' Senggatan setiap 20 KM/J mengikut spesifikasi mockup rasmi DYNOMAS
+        Dim speeds As Integer() = {0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240}
         Dim maxSpeed As Double = 240.0
 
         For Each spd As Integer In speeds
@@ -145,13 +155,10 @@ Partial Public Class DynoDashboard
             Dim deg As Double = startAngle + (frac * sweepAngle)
             Dim rad As Double = (deg * Math.PI) / 180.0
 
-            Dim isHighSpeed As Boolean = (spd >= 180)
-            Dim isExtreme As Boolean = (spd >= 210)
-            Dim brush As Brush = If(isExtreme, New SolidColorBrush(Color.FromRgb(255, 42, 42)),
-                                 If(isHighSpeed, New SolidColorBrush(Color.FromRgb(255, 200, 0)),
-                                 New SolidColorBrush(Color.FromRgb(255, 255, 255))))
+            Dim isRedline As Boolean = (spd >= 120)
+            Dim brush As Brush = If(isRedline, New SolidColorBrush(Color.FromRgb(255, 34, 34)), New SolidColorBrush(Color.FromRgb(255, 255, 255)))
 
-            Dim tickLen As Double = 9
+            Dim tickLen As Double = 14.0
             Dim x1 As Double = cx + ((rTicks - tickLen) * Math.Cos(rad))
             Dim y1 As Double = cy + ((rTicks - tickLen) * Math.Sin(rad))
             Dim x2 As Double = cx + (rTicks * Math.Cos(rad))
@@ -163,7 +170,7 @@ Partial Public Class DynoDashboard
                 .X2 = x2,
                 .Y2 = y2,
                 .Stroke = brush,
-                .StrokeThickness = 2.0
+                .StrokeThickness = 2.8
             }
             CanvasSpeedDial.Children.Add(line)
 
@@ -173,22 +180,27 @@ Partial Public Class DynoDashboard
             Dim txt As New TextBlock() With {
                 .Text = spd.ToString(),
                 .Foreground = brush,
-                .FontSize = 10,
-                .FontWeight = FontWeights.Bold,
-                .Width = 24,
-                .Height = 18,
+                .FontSize = 13,
+                .FontWeight = FontWeights.Black,
+                .FontStyle = FontStyles.Italic,
+                .Width = 34,
+                .Height = 22,
                 .TextAlignment = TextAlignment.Center
             }
-            Canvas.SetLeft(txt, nx - 12)
-            Canvas.SetTop(txt, ny - 9)
+            Canvas.SetLeft(txt, nx - 17)
+            Canvas.SetTop(txt, ny - 11)
             CanvasSpeedDial.Children.Add(txt)
 
             If spd < 240 Then
-                Dim subFrac As Double = (spd + 15) / maxSpeed
+                ' Sub-tick pada pertengahan (+10 KM/J)
+                Dim subFrac As Double = (spd + 10.0) / maxSpeed
                 Dim subDeg As Double = startAngle + (subFrac * sweepAngle)
                 Dim subRad As Double = (subDeg * Math.PI) / 180.0
-                Dim sx1 As Double = cx + ((rTicks - 5) * Math.Cos(subRad))
-                Dim sy1 As Double = cy + ((rTicks - 5) * Math.Sin(subRad))
+                Dim isSubRed As Boolean = (spd >= 120)
+                Dim subBrush As Brush = If(isSubRed, New SolidColorBrush(Color.FromRgb(255, 60, 60)), New SolidColorBrush(Color.FromArgb(180, 0, 240, 255)))
+
+                Dim sx1 As Double = cx + ((rTicks - 7.0) * Math.Cos(subRad))
+                Dim sy1 As Double = cy + ((rTicks - 7.0) * Math.Sin(subRad))
                 Dim sx2 As Double = cx + (rTicks * Math.Cos(subRad))
                 Dim sy2 As Double = cy + (rTicks * Math.Sin(subRad))
 
@@ -197,15 +209,15 @@ Partial Public Class DynoDashboard
                     .Y1 = sy1,
                     .X2 = sx2,
                     .Y2 = sy2,
-                    .Stroke = New SolidColorBrush(Color.FromArgb(140, 200, 220, 230)),
-                    .StrokeThickness = 1.0
+                    .Stroke = subBrush,
+                    .StrokeThickness = 1.4
                 }
                 CanvasSpeedDial.Children.Add(sline)
             End If
         Next
     End Sub
 
-    ''' <summary>
+'' <summary>
     ''' Melukis grid dan skala carta Dyno (Horsepower kiri, Torque kanan, RPM bawah)
     ''' </summary>
     Public Sub BuildChartScale()
@@ -395,6 +407,306 @@ Partial Public Class DynoDashboard
             End If
         End If
         UpdateOnlineStatus()
+    End Sub
+
+    ' ================= FULLSCREEN & KEYBOARD SHORTCUTS =================
+    Private Sub BtnFullscreen_Click(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        ToggleFullscreen()
+    End Sub
+
+    Private Sub DynoDashboard_KeyDown(ByVal sender As Object, ByVal e As KeyEventArgs)
+        If e.Key = Key.F11 Then
+            ToggleFullscreen()
+            e.Handled = True
+        ElseIf e.Key = Key.Escape AndAlso Me.WindowStyle = WindowStyle.None Then
+            ' Keluar dari mod Fullscreen Arcade
+            Me.WindowStyle = WindowStyle.SingleBorderWindow
+            Me.WindowState = WindowState.Normal
+            e.Handled = True
+        End If
+    End Sub
+
+    ' ================= SETTINGS & CLEAN EXIT =================
+    ' ================= MODERN CALIBRATION MODAL HANDLERS =================
+    Private _channelsInitialized As Boolean = False
+    Private _isSwitchingChannel As Boolean = False
+    Private _currentChannelIndex As Integer = -1
+
+    Private Sub BtnSetting_Click(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        ShowCalibrationModal()
+    End Sub
+
+    Private Sub ShowCalibrationModal()
+        If UniDyn.Instance IsNot Nothing Then
+            UniDyn.Instance.PrepareCalsData()
+
+            ' 1. Tab 1: Shop & Vehicle
+            TxtCalTitle.Text = UniDyn.Instance.Cals.Tbtit.Text
+            TxtCalShopName.Text = UniDyn.Instance.Cals.TBShop.Text
+            TxtCalContact.Text = UniDyn.Instance.Cals.TBCont.Text
+            TxtCalGearRatio.Text = UniDyn.Instance.Cals.TBgr.Text
+            TxtCalMag.Text = UniDyn.Instance.Cals.TBMag.Text
+            TxtCalKm.Text = UniDyn.Instance.Cals.Lkm.Text
+
+            ' 2. Tab 2: Dyno Roller & Inertia
+            TxtCalRollerDiam.Text = UniDyn.Instance.Cals.TBDiam.Text
+            TxtCalDynoInert.Text = UniDyn.Instance.Cals.TBInert.Text
+            TxtCalEngInert.Text = UniDyn.Instance.Cals.TBEngInert.Text
+            TxtCalEquivInert.Text = UniDyn.Instance.Cals.LEngInertEquiv.Text
+            TxtCalDynoType.Text = UniDyn.Instance.Cals.TBType.Text
+            TxtCalMaxRpm.Text = UniDyn.Instance.Cals.TBMaxrpm.Text
+            TxtCalMaxTorq.Text = UniDyn.Instance.Cals.TBMaxTorq.Text
+            TxtCalAcelCtrl.Text = UniDyn.Instance.Cals.TBAC.Text
+            TxtCalFrictOfs.Text = UniDyn.Instance.Cals.TBFofs.Text
+            TxtCalFrictFact.Text = UniDyn.Instance.Cals.TBFfact.Text
+            TxtCalFrictQuad.Text = UniDyn.Instance.Cals.TBFquad.Text
+
+            ' 3. Tab 3: SAE Weather
+            ChkUseSae.IsChecked = UniDyn.Instance.Cals.CBSAEComp.Checked
+            TxtSaeCf.Text = UniDyn.Instance.Cals.LSAECF.Text
+            TxtSaePress.Text = UniDyn.Instance.Cals.TBSAEP.Text
+            TxtSaeTemp.Text = UniDyn.Instance.Cals.TBSAET.Text
+            TxtSaeRh.Text = UniDyn.Instance.Cals.TBSAER.Text
+            ChkSaeAuto.IsChecked = UniDyn.Instance.Cals.CBSAEAuto.Checked
+
+            ' 4. Tab 4: Braking & Sensor Channels
+            ChkRemoteBrake.IsChecked = UniDyn.Instance.Cals.CBRemote.Checked
+            TxtRemoteChannel.Text = UniDyn.Instance.Cals.TBRch.Text
+            RadBrakeLoad.IsChecked = UniDyn.Instance.Cals.RBLoad.Checked
+            RadBrake2Point.IsChecked = UniDyn.Instance.Cals.RB2PS.Checked
+            TxtBrakeLoadVal.Text = UniDyn.Instance.Cals.TBBLoad.Text
+            ChkRampDown.IsChecked = UniDyn.Instance.Cals.CBRamp.Checked
+            ChkCutoffStart.IsChecked = UniDyn.Instance.Cals.CBStart.Checked
+
+            ' Channel ComboBox Initialization
+            _isSwitchingChannel = True
+            If Not _channelsInitialized Then
+                CmbChannels.Items.Clear()
+                For Each itm In UniDyn.Instance.Cals.ComboBox1.Items
+                    CmbChannels.Items.Add(itm.ToString())
+                Next
+                _channelsInitialized = True
+            End If
+
+            Dim selIdx As Integer = Math.Max(0, UniDyn.Instance.Cals.ComboBox1.SelectedIndex)
+            CmbChannels.SelectedIndex = selIdx
+            _currentChannelIndex = selIdx
+            LoadCurrentChannelInputs()
+            _isSwitchingChannel = False
+        End If
+
+        ModalCalOverlay.Visibility = Visibility.Visible
+    End Sub
+
+    Private Sub BtnCloseModal_Click(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        ModalCalOverlay.Visibility = Visibility.Collapsed
+    End Sub
+
+    Private Sub BtnCancelCal_Click(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        ModalCalOverlay.Visibility = Visibility.Collapsed
+    End Sub
+
+    Private Sub BtnSaveCal_Click(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        If UniDyn.Instance IsNot Nothing Then
+            ' Write Tab 1: Shop & Vehicle
+            UniDyn.Instance.Cals.Tbtit.Text = TxtCalTitle.Text
+            UniDyn.Instance.Cals.TBShop.Text = TxtCalShopName.Text
+            UniDyn.Instance.Cals.TBCont.Text = TxtCalContact.Text
+            UniDyn.Instance.Cals.TBgr.Text = TxtCalGearRatio.Text
+            UniDyn.Instance.Cals.TBMag.Text = TxtCalMag.Text
+
+            ' Write Tab 2: Roller & Inertia
+            UniDyn.Instance.Cals.TBDiam.Text = TxtCalRollerDiam.Text
+            UniDyn.Instance.Cals.TBInert.Text = TxtCalDynoInert.Text
+            UniDyn.Instance.Cals.TBEngInert.Text = TxtCalEngInert.Text
+            UniDyn.Instance.Cals.TBType.Text = TxtCalDynoType.Text
+            UniDyn.Instance.Cals.TBMaxrpm.Text = TxtCalMaxRpm.Text
+            UniDyn.Instance.Cals.TBMaxTorq.Text = TxtCalMaxTorq.Text
+            UniDyn.Instance.Cals.TBAC.Text = TxtCalAcelCtrl.Text
+            UniDyn.Instance.Cals.TBFofs.Text = TxtCalFrictOfs.Text
+            UniDyn.Instance.Cals.TBFfact.Text = TxtCalFrictFact.Text
+            UniDyn.Instance.Cals.TBFquad.Text = TxtCalFrictQuad.Text
+
+            ' Write Tab 3: SAE Weather
+            UniDyn.Instance.Cals.CBSAEComp.Checked = (ChkUseSae.IsChecked = True)
+            UniDyn.Instance.Cals.TBSAEP.Text = TxtSaePress.Text
+            UniDyn.Instance.Cals.TBSAET.Text = TxtSaeTemp.Text
+            UniDyn.Instance.Cals.TBSAER.Text = TxtSaeRh.Text
+            UniDyn.Instance.Cals.CBSAEAuto.Checked = (ChkSaeAuto.IsChecked = True)
+
+            ' Write Tab 4: Braking
+            UniDyn.Instance.Cals.CBRemote.Checked = (ChkRemoteBrake.IsChecked = True)
+            UniDyn.Instance.Cals.TBRch.Text = TxtRemoteChannel.Text
+            UniDyn.Instance.Cals.RBLoad.Checked = (RadBrakeLoad.IsChecked = True)
+            UniDyn.Instance.Cals.RB2PS.Checked = (RadBrake2Point.IsChecked = True)
+            UniDyn.Instance.Cals.TBBLoad.Text = TxtBrakeLoadVal.Text
+            UniDyn.Instance.Cals.CBRamp.Checked = (ChkRampDown.IsChecked = True)
+            UniDyn.Instance.Cals.CBStart.Checked = (ChkCutoffStart.IsChecked = True)
+
+            ' Write Active Channel Inputs
+            If CmbChannels.SelectedIndex >= 0 Then
+                UniDyn.Instance.Cals.ComboBox1.SelectedIndex = CmbChannels.SelectedIndex
+            End If
+            SaveCurrentChannelInputs()
+
+            ' Apply & Save calibrations in UniDyn
+            UniDyn.Instance.ApplyCalsFromWpf()
+
+            ' Update Dashboard shop banner
+            TxtBannerTitle.Text = If(String.IsNullOrWhiteSpace(TxtCalTitle.Text), "YOUR NAME HERE", TxtCalTitle.Text)
+        End If
+
+        ModalCalOverlay.Visibility = Visibility.Collapsed
+    End Sub
+
+    Private Sub CmbChannels_SelectionChanged(ByVal sender As Object, ByVal e As SelectionChangedEventArgs)
+        If _channelsInitialized AndAlso Not _isSwitchingChannel AndAlso UniDyn.Instance IsNot Nothing AndAlso CmbChannels.SelectedIndex >= 0 Then
+            _isSwitchingChannel = True
+            SaveCurrentChannelInputs()
+            _currentChannelIndex = CmbChannels.SelectedIndex
+            UniDyn.Instance.Cals.ComboBox1.SelectedIndex = CmbChannels.SelectedIndex
+            LoadCurrentChannelInputs()
+            _isSwitchingChannel = False
+        End If
+    End Sub
+
+    Private Sub LoadCurrentChannelInputs()
+        If UniDyn.Instance IsNot Nothing Then
+            TxtChName.Text = UniDyn.Instance.Cals.tNAM.Text
+            TxtChUnits.Text = UniDyn.Instance.Cals.tUNI.Text
+            TxtChOffset.Text = UniDyn.Instance.Cals.tOF.Text
+            TxtChFactor.Text = UniDyn.Instance.Cals.tFAC.Text
+            TxtChMin.Text = UniDyn.Instance.Cals.tMIN.Text
+            TxtChMax.Text = UniDyn.Instance.Cals.tMAX.Text
+            TxtChA1.Text = UniDyn.Instance.Cals.TA1.Text
+            TxtChA2.Text = UniDyn.Instance.Cals.TA2.Text
+            TxtChFilter.Text = UniDyn.Instance.Cals.tFLT.Text
+            TxtChMajorTicks.Text = UniDyn.Instance.Cals.tMAJ.Text
+            TxtChMinorTicks.Text = UniDyn.Instance.Cals.tMNR.Text
+            TxtChDecimals.Text = UniDyn.Instance.Cals.tDEC.Text
+        End If
+    End Sub
+
+    Private Sub SaveCurrentChannelInputs()
+        If UniDyn.Instance IsNot Nothing Then
+            UniDyn.Instance.Cals.tNAM.Text = TxtChName.Text
+            UniDyn.Instance.Cals.tUNI.Text = TxtChUnits.Text
+            UniDyn.Instance.Cals.tOF.Text = TxtChOffset.Text
+            UniDyn.Instance.Cals.tFAC.Text = TxtChFactor.Text
+            UniDyn.Instance.Cals.tMIN.Text = TxtChMin.Text
+            UniDyn.Instance.Cals.tMAX.Text = TxtChMax.Text
+            UniDyn.Instance.Cals.TA1.Text = TxtChA1.Text
+            UniDyn.Instance.Cals.TA2.Text = TxtChA2.Text
+            UniDyn.Instance.Cals.tFLT.Text = TxtChFilter.Text
+            UniDyn.Instance.Cals.tMAJ.Text = TxtChMajorTicks.Text
+            UniDyn.Instance.Cals.tMNR.Text = TxtChMinorTicks.Text
+            UniDyn.Instance.Cals.tDEC.Text = TxtChDecimals.Text
+        End If
+    End Sub
+
+    Private Sub TxtCalEngInert_TextChanged(ByVal sender As Object, ByVal e As TextChangedEventArgs)
+        UpdateEquivInertia()
+    End Sub
+
+    Private Sub TxtCalGearRatio_TextChanged(ByVal sender As Object, ByVal e As TextChangedEventArgs)
+        UpdateEquivInertia()
+    End Sub
+
+    Private Sub UpdateEquivInertia()
+        If TxtCalEngInert Is Nothing OrElse TxtCalGearRatio Is Nothing OrElse TxtCalEquivInert Is Nothing Then Return
+        Dim engInert As Double = 0.0
+        Dim gr As Double = 0.0
+        Double.TryParse(TxtCalEngInert.Text, engInert)
+        Double.TryParse(TxtCalGearRatio.Text, gr)
+        Dim equiv As Double = engInert * (gr ^ 2)
+        TxtCalEquivInert.Text = (Math.Round(equiv * 1000.0) / 1000.0).ToString("F3")
+    End Sub
+
+    Private Sub TxtSae_TextChanged(ByVal sender As Object, ByVal e As TextChangedEventArgs)
+        RecalculateSaeCf()
+    End Sub
+
+    Private Sub ChkUseSae_Click(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        RecalculateSaeCf()
+    End Sub
+
+    Private Sub RecalculateSaeCf()
+        If TxtSaePress Is Nothing OrElse TxtSaeTemp Is Nothing OrElse TxtSaeCf Is Nothing OrElse ChkUseSae Is Nothing Then Return
+        If ChkUseSae.IsChecked <> True Then
+            TxtSaeCf.Text = "100%"
+            Return
+        End If
+
+        Dim p As Double = 0.0
+        Dim t As Double = 0.0
+        Double.TryParse(TxtSaePress.Text, p)
+        Double.TryParse(TxtSaeTemp.Text, t)
+
+        If p >= 95.0 AndAlso p <= 105.0 AndAlso t >= 15.0 AndAlso t <= 35.0 Then
+            Dim cf As Double = 1.176 * ((99.0 / p) * ((t + 273.0) / 298.0) ^ 0.5) - 0.176
+            TxtSaeCf.Text = (cf * 100.0).ToString("N1") & "%"
+        Else
+            TxtSaeCf.Text = "100%"
+        End If
+    End Sub
+
+    Private Sub BtnAutoFrictWpf_Click(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        If UniDyn.Instance IsNot Nothing Then
+            UniDyn.Instance.Z_AutoFrict()
+            TxtCalFrictOfs.Text = UniDyn.Instance.Cals.TBFofs.Text
+            TxtCalFrictFact.Text = UniDyn.Instance.Cals.TBFfact.Text
+            TxtCalFrictQuad.Text = UniDyn.Instance.Cals.TBFquad.Text
+
+            If UniDyn.Instance.FACon Then
+                ModalCalOverlay.Visibility = Visibility.Collapsed
+            End If
+        End If
+    End Sub
+
+    Private Sub BtnContCalsWpf_Click(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        If UniDyn.Instance IsNot Nothing Then
+            UniDyn.Instance.Cals.Button3.PerformClick()
+            Try
+                If UniDyn.Instance.contcals IsNot Nothing Then
+                    UniDyn.Instance.contcals.TopMost = True
+                    UniDyn.Instance.contcals.BringToFront()
+                End If
+            Catch
+            End Try
+        End If
+    End Sub
+
+    Private Sub BtnSkinColor_Click(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        If UniDyn.Instance IsNot Nothing Then
+            UniDyn.Instance.Cals.Button5.PerformClick()
+        End If
+    End Sub
+
+    Private Sub BtnBgColor_Click(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        If UniDyn.Instance IsNot Nothing Then
+            UniDyn.Instance.Cals.Button6.PerformClick()
+        End If
+    End Sub
+
+    Protected Overrides Sub OnClosed(ByVal e As EventArgs)
+        MyBase.OnClosed(e)
+        Try
+            If UniDyn.Instance IsNot Nothing Then
+                UniDyn.Instance.Close()
+            End If
+        Catch
+        End Try
+        Environment.Exit(0)
+    End Sub
+
+    Private Sub ToggleFullscreen()
+        If Me.WindowStyle = WindowStyle.None Then
+            Me.WindowStyle = WindowStyle.SingleBorderWindow
+            Me.WindowState = WindowState.Maximized
+        Else
+            Me.WindowStyle = WindowStyle.None
+            Me.WindowState = WindowState.Maximized
+        End If
     End Sub
 
     Public Sub UpdateOnlineStatus()

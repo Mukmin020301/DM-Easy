@@ -120,9 +120,9 @@ Public Class UniDyn
     Private WithEvents dispsel As New DispSel                       'Channel Display form
     Private WithEvents GearRatio As New GearRatio                   'Set Pull RPM factor
     Private WithEvents fgraf As New Fgraf
-    Private WithEvents Cals As New Cals
+    Public WithEvents Cals As New Cals
     Private WithEvents Comp As New Comp
-    Private WithEvents contcals As New ContCals                     'Controler Calibration Form
+    Public WithEvents contcals As New ContCals                     'Controler Calibration Form
     Private WithEvents Timer1 As New System.Windows.Forms.Timer()
     Private WithEvents FOBD As New FOBD                             'OBD Controls
     Dim WithEvents OBDport As New SerialPort
@@ -199,7 +199,7 @@ Public Class UniDyn
     Dim frictoft, speed1avgt, ietemp As Single
 
     Dim tempstr2, ShopName, ShopCont As String
-    Dim FACon As Boolean
+    Public FACon As Boolean
     'Dim frictofft As Double   'Frictional offset and Temporary value
     ' Dim Fauto(2, 10001) As Double        'Frictional spin down (rpm, frict) for Auto Cal
     ' Dim FAC, FACi, FACiFmin, FACi90, FACi10, temp As Integer            'Frictional AUto Cal Counters
@@ -644,6 +644,12 @@ Public Class UniDyn
             wpfDash.Show()
         Catch ex As Exception
         End Try
+
+        ' Sembunyikan tetingkap WinForms lama (kekalkan pemprosesan data & serial port di latar belakang)
+        Me.Opacity = 0
+        Me.ShowInTaskbar = False
+        Me.WindowState = FormWindowState.Minimized
+        Me.Location = New Point(-32000, -32000)
 
     End Sub
     Private Sub defaults()
@@ -3720,6 +3726,65 @@ Public Class UniDyn
     Private Sub Z_EngInert() Handles Cals.EIchanged
         Cals.LEngInertEquiv.Text = Int(1000 * Val(Cals.TBEngInert.Text) * Val(Cals.TBgr.Text) ^ 2) / 1000
     End Sub
+    Public Sub PrepareCalsData()
+        Cals.TBMag.Text = MAG
+        Cals.Tbtit.Text = tagline
+        Cals.TBDiam.Text = diam
+        Cals.TBMaxrpm.Text = rpmdynomax
+        Cals.TBMaxTorq.Text = TorqDynoMax
+        Cals.TBInert.Text = inert
+        Cals.TBEngInert.Text = inerteng
+        Cals.TBFofs.Text = frictof
+        Cals.TBFfact.Text = frictfact
+        Cals.TBFquad.Text = FrictQuad
+        Cals.TBType.Text = dynotype
+        Cals.TBgr.Text = GR
+        Cals.LEngInertEquiv.Text = (Int(1000 * inerteng * GR ^ 2) / 1000).ToString()
+        Cals.CBRemote.Checked = remote
+        Cals.TBRch.Text = remch.ToString()
+        Cals.TBAC.Text = KPa.ToString()
+        Cals.TBShop.Text = ShopName
+        Cals.TBCont.Text = ShopCont
+
+        Cals.CBSAEAuto.Checked = saeauto
+        Cals.CBSAEComp.Checked = saecomp
+        Cals.TBSAEP.Text = saepress.ToString()
+        Cals.TBSAET.Text = saetemp.ToString()
+        Cals.TBSAER.Text = saeRH.ToString()
+
+        calupdate = False
+        Cals.ComboBox1.SelectedIndex = Math.Max(0, Calch - 1)
+        calupdate = True
+
+        Cals.tNAM.Text = alab(Calch)
+        Cals.tUNI.Text = auni(Calch)
+        Cals.tOF.Text = aof(Calch).ToString()
+        Cals.tFAC.Text = Afact(Calch).ToString()
+        Cals.tMIN.Text = amin(Calch).ToString()
+        Cals.TA1.Text = a1(Calch).ToString()
+        Cals.TA2.Text = a2(Calch).ToString()
+        Cals.tMAX.Text = amax(Calch).ToString()
+        Cals.tFLT.Text = afilt(Calch).ToString()
+        Cals.tMAJ.Text = amajtix(Calch).ToString()
+        Cals.tMNR.Text = amintix(Calch).ToString()
+        Cals.tDEC.Text = adec(Calch)
+
+        Cals.TBBLoad.Text = BREKload.ToString()
+        Cals.RB2PS.Checked = brek2p
+        Cals.RBLoad.Checked = Not brek2p
+        Cals.CBRamp.Checked = brekramp
+        Cals.CBStart.Checked = brekstop
+
+        Cals.CBRemote.Checked = remote
+        Cals.Lkm.Text = "Km: " + KMt.ToString("F1")
+    End Sub
+
+    Public Sub ApplyCalsFromWpf()
+        setCals()
+        LTagline.Text = tagline
+        Call savecal()
+    End Sub
+
     Private Sub CalBut_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CalBut.Click
         If Cals.Visible = True Then
             Cals.Hide()

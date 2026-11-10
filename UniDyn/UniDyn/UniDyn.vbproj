@@ -74,13 +74,19 @@
     <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>false</SignManifests>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Uni.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>66B3CE7264B0AE4C64CF6C2C01E4D9CCAA678727</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>UniDyn_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -256,6 +262,7 @@
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
+    <None Include="UniDyn_1_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Indicator-Gage.bmp" />
@@ -346,8 +353,10 @@
     <None Include="Resources\CBK.png" />
     <Content Include="Resources\Gage_4.png" />
     <None Include="Resources\Indicator-Gageb.bmp" />
+    <Resource Include="Resources\kzr_logo_dash.png" />
+    <Resource Include="Resources\kzr logo 2024.png" />
+    <Resource Include="Resources\Uni.ico" />
   </ItemGroup>
-  
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
